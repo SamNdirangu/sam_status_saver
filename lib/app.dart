@@ -12,93 +12,109 @@ import 'package:sam_status_saver/screens/homeScreen/home.dart';
 class App extends StatelessWidget {
   const App({Key key}) : super(key: key);
 
+  
 
   requestWritePermission(context) async {
-    PermissionStatus permissionStatus = await PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
-    print(permissionStatus.value.toString());
-    if(permissionStatus.value == 2) {
-      
+    PermissionStatus permissionStatus = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.storage);
+    if (permissionStatus.value == 2) {
       Provider.of<PermissionProvider>(context).setNewPermission();
     } else {
-      Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([PermissionGroup.storage]);
-      if(permissions.values.first.value == 2){
+      Map<PermissionGroup, PermissionStatus> permissions =
+          await PermissionHandler()
+              .requestPermissions([PermissionGroup.storage]);
+      if (permissions.values.first.value == 2) {
         Provider.of<PermissionProvider>(context).setNewPermission();
       }
     }
   }
 
   appInitializer(BuildContext context) async {
-    Directory appDirectory;
-    //Check if status folder exists
-    appDirectory = Directory(statusPath);
-    bool isExist = await appDirectory.exists();
+    bool isExist = Directory(appDirectoryPath).existsSync();
     if (isExist) {
-      Provider.of<StatusDirectoryState>(context).setDirectoryState();
-    }
+      isExist = Directory(appDirectoryTempPath).existsSync();
+      if (!isExist) {
+        await Directory(appDirectoryTempPath).create();
+      }
+      isExist = Directory(appDirectoryVideoPath).existsSync();
+      if (!isExist) {
+        Directory(appDirectoryVideoPath).createSync();
+      }
 
-    appDirectory = Directory(appDirectoryPath);
-    isExist = await appDirectory.exists();
-    if (isExist) {
-      appDirectory = Directory(appDirectoryVideoPath);
-      isExist = await appDirectory.exists();
+      isExist = Directory(appDirectoryImagePath).existsSync();
       if (!isExist) {
-        appDirectory.create();
-      }
-      appDirectory = Directory(appDirectoryImagePath);
-      isExist = await appDirectory.exists();
-      if (!isExist) {
-        appDirectory.create();
-      }
-      appDirectory = Directory(appDirectoryTempPath);
-      isExist = await appDirectory.exists();
-      if (!isExist) {
-        appDirectory.create();
+        Directory(appDirectoryImagePath).createSync();
       }
     } else {
-      appDirectory.create();
-      appDirectory = Directory(appDirectoryVideoPath);
-      appDirectory.create();
-      appDirectory = Directory(appDirectoryImagePath);
-      appDirectory.create();
-      appDirectory = Directory(appDirectoryTempPath);
-      appDirectory.create();
+      Directory(appDirectoryPath).createSync();
+      await Directory(appDirectoryTempPath).create();
+      Directory(appDirectoryVideoPath).createSync();
+      Directory(appDirectoryImagePath).createSync();
     }
     Provider.of<AppDirectoryState>(context).setDirectoryState();
+
+
+    final statusPaths = Provider.of<StatusDirectoryPath>(context);
+    //Check which status folder exists
+    isExist = Directory(statusPathStandard).existsSync();
+    if (isExist) {
+      statusPaths.addStatusPath(statusPathStandard);
+    }
+
+    isExist = Directory(statusPathGB).existsSync();
+    if (isExist) {
+      statusPaths.addStatusPath(statusPathGB);
+    }
+
+    isExist = Directory(statusPathBusiness).existsSync();
+    if (isExist) {
+      statusPaths.addStatusPath(statusPathBusiness);
+    }
+
+    if (statusPaths.statusPathsAvailable.isNotEmpty) {
+      Provider.of<StatusDirectoryState>(context).setDirectoryState();
+      if (await Provider.of<StatusDirectoryFavourite>(context).getFavouritePath()) {
+        Provider.of<StatusDirectoryFavourite>(context)
+            .setFavouritePath(statusPaths.statusPathsAvailable[0]);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<DarkThemeState>(context); 
+    final themeProvider = Provider.of<DarkThemeState>(context);
 
-    if(Provider.of<RefreshControl>(context).refresh) {      
+    if (Provider.of<RefreshControl>(context).refresh) {
       if (!Provider.of<PermissionProvider>(context).readEnabled) {
         requestWritePermission(context);
-        
       }
       if (Provider.of<PermissionProvider>(context).readEnabled) {
         appInitializer(context);
         Provider.of<RefreshControl>(context).setRefreshState(false);
       }
     }
-    final readEnabled = Provider.of<PermissionProvider>(context).readEnabled;
-    final isWhatsAppInstalled = Provider.of<StatusDirectoryState>(context).directoryExists;
 
-    
+    final readEnabled = Provider.of<PermissionProvider>(context).readEnabled;
+    final isWhatsAppInstalled =
+        Provider.of<StatusDirectoryState>(context).directoryExists;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Status Saver',
       darkTheme: ThemeData(
         brightness: Brightness.dark,
+        buttonColor: Colors.black54,
       ),
       theme: ThemeData(
-        primarySwatch: colorCustom,
-        brightness: themeProvider.darkThemeState ? Brightness.dark : Brightness.light
-        ),
+          primarySwatch: colorCustom,
+          accentColor: colorCustom,
+          brightness: themeProvider.darkThemeState
+              ? Brightness.dark
+              : Brightness.light),
       themeMode:
           themeProvider.darkThemeState ? ThemeMode.dark : ThemeMode.light,
       home: HomeScreen(
-        isReadEnabled: readEnabled && isWhatsAppInstalled
+        isReadEnabled: readEnabled && isWhatsAppInstalled,
       ),
     );
   }

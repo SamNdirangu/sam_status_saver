@@ -277,14 +277,11 @@ class _BackdropState extends State<Backdrop>
         backTitle: widget.backTitle,
       ),
       actions: <Widget>[
-        Visibility(
-          visible: !_frontLayerVisible,
-          child: IconButton(
+        IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
               Share.shareText('$share', 'text/*');
             },
-          ),
         ),
         IconButton(
           icon: themeProvider.darkThemeState ? Icon(Icons.brightness_7) : Icon(Icons.brightness_3),

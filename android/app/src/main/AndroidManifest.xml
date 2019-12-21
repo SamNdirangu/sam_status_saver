@@ -7,7 +7,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="sam_status_saver"
+        android:label="Sam's Status Saver"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

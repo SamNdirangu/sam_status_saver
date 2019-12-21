@@ -22,7 +22,8 @@ class StatusVideos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (readEnabled) {
-      if (!scanningDone || thumbnailPaths.isEmpty) {
+      if (!scanningDone) {
+        print(scanningDone.toString());
         return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -33,6 +34,24 @@ class StatusVideos extends StatelessWidget {
               Text('Loading... Building video cache for first time',
                   textScaleFactor: 1.2, style: TextStyle(color: Colors.white)),
             ]);
+      }
+      if (thumbnailPaths.isEmpty) {
+        return Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.sentiment_satisfied,
+                  size: 56,
+                  color: Colors.white,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Hey it seems you dont have any status videos yet.\n\n Once you view a few come back and see them here',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ]),
+        );
       }
       return RefreshIndicator(
           onRefresh: getVideosCallBack,

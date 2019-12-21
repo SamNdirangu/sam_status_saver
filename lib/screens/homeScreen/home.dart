@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:sam_status_saver/constants/paths.dart';
+import 'package:sam_status_saver/providers/providers.dart';
 import 'package:sam_status_saver/screens/homeScreen/tabs/statusImages.dart';
 import 'package:sam_status_saver/screens/homeScreen/tabs/statusVideos.dart';
 import 'package:sam_status_saver/views/backdropPanel.dart';
@@ -12,11 +15,7 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool isReadEnabled;
-
-  const HomeScreen({
-    Key key,
-    @required this.isReadEnabled,
-  }) : super(key: key);
+  const HomeScreen({Key key, @required this.isReadEnabled}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -38,14 +37,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
 //-----------------------------------------------------------------------------------
   //Image Preparation
-  Directory statusDirectory = Directory(statusPath);
+  Directory statusDirectory;
   List<FileSystemEntity> statusImages;
   List<String> imagePaths;
+
+  bool isImageLoading = false;
   bool scanningDone = false;
 
   Future<void> getImages() async {
-    imagePaths = List();
+    isImageLoading = true;
     statusImages = statusDirectory.listSync(followLinks: false);
+    imagePaths = List();
     //Sort newest to old
     statusImages.sort((a, b) => File(b.path)
         .lastModifiedSync()
@@ -59,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
     setState(() {
       imagePaths = imagePaths;
+      isImageLoading = false;
       scanningDone = true;
     });
   }
@@ -66,14 +69,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   //----------------ImageEnd-------------------------------------------------------------
 //---------------------------------------------------------------------------------------
   //Video Preparation
-  Directory tempDirectory = Directory(appDirectoryTempPath);
   List<FileSystemEntity> statusVideos;
   List<FileSystemEntity> videoThumbnails;
   List<String> videoPaths = List();
-  List<String> thumbnailPaths;
+  List<String> thumbnailPaths = List();
+
+  bool isVideoLoading = false;
   bool scanningVideosDone = false;
 
   Future<void> getVideos() async {
+    isVideoLoading = true;
+    Directory tempDirectory = await getApplicationDocumentsDirectory();
+
     String fileName;
     String thumbnailName;
     bool thumbReady;
@@ -110,19 +117,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           );
           thumbnailPaths.add(path);
         }
-
-        refreshCount++;
-        if (refreshCount > 3) {
+        refreshCount ++;
+        if(refreshCount>4){
           setState(() {
             videoPaths = videoPaths;
-            thumbnailPaths = thumbnailPaths;
             scanningVideosDone = true;
+            thumbnailPaths = thumbnailPaths;
           });
+
         }
       }
     }
     setState(() {
       videoPaths = videoPaths;
+      isVideoLoading = false;
+      scanningVideosDone = true;
       thumbnailPaths = thumbnailPaths;
     });
   }
@@ -143,26 +152,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  callGetters() {
-    getImages();
-    getVideos();
-    cleanUpThumbs();
+  callGetters(statusPath) {
+    statusDirectory = Directory(statusPath);
+    if (!isImageLoading) {
+      getImages();
+    }
+    if (!isVideoLoading) {
+      getVideos();
+      cleanUpThumbs();
+    }
   }
 
   //--------------------Video End--------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     if (widget.isReadEnabled && loadGetters) {
+      final statusPath =
+          Provider.of<StatusDirectoryFavourite>(context).statusPathsFavourite;
       setState(() {
         loadGetters = false;
-        callGetters();
+        callGetters(statusPath);
       });
     }
+    
 
     return Backdrop(
         controller: _animationController,
         backTitle: Text('More'),
-        backLayer: BackdropPanel(),
+        backLayer: BackdropPanel(
+          callGetters: callGetters,
+        ),
         frontTitle: Text("Sam's Status Saver"),
         frontLayer: Scaffold(
           appBar: PreferredSize(
@@ -197,8 +216,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   thumbnailPaths: thumbnailPaths,
                   scanningDone: scanningVideosDone,
                   readEnabled: widget.isReadEnabled,
-                  getVideosCallBack: getVideos
-              )
+                  getVideosCallBack: getVideos)
             ],
           ),
         ));

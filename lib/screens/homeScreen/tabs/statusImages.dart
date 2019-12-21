@@ -21,7 +21,34 @@ class StatusImages extends StatelessWidget {
   Widget build(BuildContext context) {
     if (readEnabled) {
       if (!scanningDone) {
-        return Center(child: CircularProgressIndicator());
+        return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator(),
+              SizedBox(
+                height: 30,
+              ),
+              Text('Loading... Hold on a moment',
+                  textScaleFactor: 1.2, style: TextStyle(color: Colors.white)),
+            ]);
+      }
+      if (imagePaths.isEmpty) {
+        return Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.sentiment_satisfied,
+                  size: 56,
+                  color: Colors.white,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Hey it seems you dont have any status pictues yet.\n\n Once you view a few come back and see them here',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ]),
+        );
       }
       return RefreshIndicator(
           onRefresh: getImages,
@@ -30,7 +57,6 @@ class StatusImages extends StatelessWidget {
                 SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
             itemCount: imagePaths.length,
             itemBuilder: (BuildContext context, int index) {
-
               return Padding(
                 padding: const EdgeInsets.all(1.0),
                 child: GestureDetector(
