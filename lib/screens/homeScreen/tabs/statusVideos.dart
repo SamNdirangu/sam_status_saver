@@ -23,7 +23,6 @@ class StatusVideos extends StatelessWidget {
   Widget build(BuildContext context) {
     if (readEnabled) {
       if (!scanningDone) {
-        print(scanningDone.toString());
         return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

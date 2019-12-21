@@ -5,6 +5,6 @@ const sale2 =
 
 
 const share =
-    "Say good bye for asking for status resends, click the link below to download the Sam's Status Saver: Made with Flutter\n\nhttps://github.com/SamNdirangu/SamNdirangu.github.io/blob/master/assets/SamsStatusSaver-v1.0.5.apk";
+    "Say good bye for asking for status resends, click the link below to download the Sam's Status Saver: Made with Flutter\n\nhttps://github.com/SamNdirangu/SamNdirangu.github.io/blob/master/assets/SamsStatusSaver.apk";
 
 const hintMessage = "Hint: You can find your saved statuses in the folder Sam's Status Saver";

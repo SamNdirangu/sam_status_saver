@@ -46,7 +46,6 @@ class _BackdropPanelState extends State<BackdropPanel> {
     //3 => BUsimess
 
     if (code == 1) {
-      print('hockey');
       setState(() {
         infoMessage =
             "Sorry but you dont have the standard WhatsApp version installed";
@@ -146,7 +145,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
-                                "Version: 1.0.2",
+                                "Version: 1.0.6",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black87),

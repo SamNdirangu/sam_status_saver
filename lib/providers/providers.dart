@@ -80,7 +80,6 @@ class StatusDirectoryState with ChangeNotifier {
 
   void setDirectoryState() {
     _directoryExists = true;
-    notifyListeners();
   }
 }
 
@@ -104,7 +103,6 @@ class StatusDirectoryFavourite with ChangeNotifier {
     final value = prefs.getString('favPath');
     if (value != null) {
       _statusPathFavourite = value;
-      notifyListeners();
       return false;
     }
     return true;

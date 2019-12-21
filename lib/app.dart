@@ -12,8 +12,6 @@ import 'package:sam_status_saver/screens/homeScreen/home.dart';
 class App extends StatelessWidget {
   const App({Key key}) : super(key: key);
 
-  
-
   requestWritePermission(context) async {
     PermissionStatus permissionStatus = await PermissionHandler()
         .checkPermissionStatus(PermissionGroup.storage);
@@ -53,7 +51,6 @@ class App extends StatelessWidget {
     }
     Provider.of<AppDirectoryState>(context).setDirectoryState();
 
-
     final statusPaths = Provider.of<StatusDirectoryPath>(context);
     //Check which status folder exists
     isExist = Directory(statusPathStandard).existsSync();
@@ -72,11 +69,13 @@ class App extends StatelessWidget {
     }
 
     if (statusPaths.statusPathsAvailable.isNotEmpty) {
-      Provider.of<StatusDirectoryState>(context).setDirectoryState();
-      if (await Provider.of<StatusDirectoryFavourite>(context).getFavouritePath()) {
+      if (await Provider.of<StatusDirectoryFavourite>(context)
+          .getFavouritePath()) {
         Provider.of<StatusDirectoryFavourite>(context)
             .setFavouritePath(statusPaths.statusPathsAvailable[0]);
       }
+      Provider.of<StatusDirectoryState>(context).setDirectoryState();
+      Provider.of<RefreshControl>(context).setRefreshState(false);
     }
   }
 
@@ -87,10 +86,8 @@ class App extends StatelessWidget {
     if (Provider.of<RefreshControl>(context).refresh) {
       if (!Provider.of<PermissionProvider>(context).readEnabled) {
         requestWritePermission(context);
-      }
-      if (Provider.of<PermissionProvider>(context).readEnabled) {
+      } else if (Provider.of<PermissionProvider>(context).readEnabled) {
         appInitializer(context);
-        Provider.of<RefreshControl>(context).setRefreshState(false);
       }
     }
 

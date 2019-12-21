@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sam_status_saver/constants/paths.dart';
 import 'package:sam_status_saver/providers/providers.dart';
@@ -69,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   //----------------ImageEnd-------------------------------------------------------------
 //---------------------------------------------------------------------------------------
   //Video Preparation
+  Directory tempDirectory = Directory(appDirectoryTempPath);
   List<FileSystemEntity> statusVideos;
   List<FileSystemEntity> videoThumbnails;
   List<String> videoPaths = List();
@@ -79,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Future<void> getVideos() async {
     isVideoLoading = true;
-    Directory tempDirectory = await getApplicationDocumentsDirectory();
 
     String fileName;
     String thumbnailName;
@@ -116,9 +115,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             quality: 10,
           );
           thumbnailPaths.add(path);
+          
+          refreshCount ++;
         }
-        refreshCount ++;
-        if(refreshCount>4){
+        //Dont show loading for long
+        if(refreshCount>3){
           setState(() {
             videoPaths = videoPaths;
             scanningVideosDone = true;
@@ -158,6 +159,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       getImages();
     }
     if (!isVideoLoading) {
+      setState(() {
+        scanningVideosDone = false;
+      });
       getVideos();
       cleanUpThumbs();
     }
