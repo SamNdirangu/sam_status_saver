@@ -69,13 +69,11 @@ class _ImageContentViewState extends State<ImageContentView>
         onTap: _togglehideFab,
         child: Center(
           child: Image.file(File(path)),
-        )
-    );
+        ));
   }
 
-  listener (){
-    setState(() { 
-    });
+  listener() {
+    setState(() {});
   }
 
   @override

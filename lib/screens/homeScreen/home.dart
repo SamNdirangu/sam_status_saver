@@ -34,6 +34,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         duration: Duration(milliseconds: 300), value: 1.0, vsync: this);
   }
 
+  @override
+  void dispose() { 
+    _tabController.dispose();
+    _animationController.dispose();
+    super.dispose();
+  }
+
 //-----------------------------------------------------------------------------------
   //Image Preparation
   Directory statusDirectory;
@@ -74,12 +81,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<String> videoPaths = List();
   List<String> thumbnailPaths = List();
 
+  String ext = '';
+
   bool isVideoLoading = false;
   bool scanningVideosDone = false;
 
   Future<void> getVideos() async {
     isVideoLoading = true;
-
+    int refreshCount = 0;
     String fileName;
     String thumbnailName;
     bool thumbReady;
@@ -92,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         .compareTo(File(a.path).lastModifiedSync().toString()));
 
     videoThumbnails = tempDirectory.listSync(followLinks: false);
-    int refreshCount = 0;
+
     for (var file in statusVideos) {
       if (file.path.contains('.mp4')) {
         videoPaths.add(file.path);
@@ -101,31 +110,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
         for (var thumbnail in videoThumbnails) {
           thumbnailName = basenameWithoutExtension(thumbnail.path);
-          if (thumbnailName.compareTo(fileName) == 0) {
+          if (thumbnailName.contains(fileName + ext)) {
             thumbnailPaths.add(thumbnail.path);
             thumbReady = true;
             break;
           }
         }
         if (thumbReady == false) {
+          print('ohoh');
           final path = await VideoThumbnail.thumbnailFile(
             video: file.path,
-            thumbnailPath: appDirectoryTempPath,
+            thumbnailPath: appDirectoryTempPath + '/' + fileName + ext + '.png',
             imageFormat: ImageFormat.PNG,
             quality: 10,
           );
           thumbnailPaths.add(path);
-          
-          refreshCount ++;
+          refreshCount++;
         }
         //Dont show loading for long
-        if(refreshCount>3){
+        if (refreshCount > 3) {
           setState(() {
             videoPaths = videoPaths;
             scanningVideosDone = true;
             thumbnailPaths = thumbnailPaths;
           });
-
         }
       }
     }
@@ -135,26 +143,54 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       scanningVideosDone = true;
       thumbnailPaths = thumbnailPaths;
     });
+    cleanUpThumbs();
   }
 
   void cleanUpThumbs() {
     bool isDelete;
-    for (var thumbanail in videoThumbnails) {
-      isDelete = true;
-      for (var path in thumbnailPaths) {
-        if (thumbanail.path.compareTo(path) == 0) {
-          isDelete = false;
-          break;
+    String thumbName;
+    String thumbName2;
+
+    print(videoThumbnails.length.toString());
+    print(thumbnailPaths.length.toString());
+    if (thumbnailPaths.isNotEmpty) {
+      for (var thumbanail in videoThumbnails) {
+        isDelete = true;
+        thumbName = basenameWithoutExtension(thumbanail.path);
+        for (var path in thumbnailPaths) {
+          thumbName2 = basenameWithoutExtension(path);
+          if (thumbName.contains(ext)) {
+            print(thumbName);
+            print(ext);
+            if (thumbName.contains(thumbName2)) {
+              print(thumbName2);
+              isDelete = false;
+              break;
+            }
+          } else {
+            isDelete = false;
+          }
         }
-      }
-      if (isDelete) {
-        thumbanail.delete();
+        if (isDelete) {
+          print('deleted');
+          print(thumbName2);
+          print('');
+          thumbanail.delete();
+        }
       }
     }
   }
 
   callGetters(statusPath) {
     statusDirectory = Directory(statusPath);
+    if (statusPath == statusPathStandard) {
+      ext = 'standard';
+    } else if (statusPath == statusPathGB) {
+      ext = 'v-gb';
+    } else {
+      ext = 'business';
+    }
+
     if (!isImageLoading) {
       getImages();
     }
@@ -163,7 +199,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         scanningVideosDone = false;
       });
       getVideos();
-      cleanUpThumbs();
     }
   }
 
@@ -178,7 +213,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         callGetters(statusPath);
       });
     }
-    
 
     return Backdrop(
         controller: _animationController,
