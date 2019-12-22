@@ -30,22 +30,16 @@ class App extends StatelessWidget {
   appInitializer(BuildContext context) async {
     bool isExist = Directory(appDirectoryPath).existsSync();
     if (isExist) {
-      isExist = Directory(appDirectoryTempPath).existsSync();
-      if (!isExist) {
-        await Directory(appDirectoryTempPath).create();
-      }
       isExist = Directory(appDirectoryVideoPath).existsSync();
       if (!isExist) {
         Directory(appDirectoryVideoPath).createSync();
       }
-
       isExist = Directory(appDirectoryImagePath).existsSync();
       if (!isExist) {
         Directory(appDirectoryImagePath).createSync();
       }
     } else {
       Directory(appDirectoryPath).createSync();
-      await Directory(appDirectoryTempPath).create();
       Directory(appDirectoryVideoPath).createSync();
       Directory(appDirectoryImagePath).createSync();
     }

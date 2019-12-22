@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sam_status_saver/constants/paths.dart';
 import 'package:sam_status_saver/providers/providers.dart';
@@ -35,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   @override
-  void dispose() { 
+  void dispose() {
     _tabController.dispose();
     _animationController.dispose();
     super.dispose();
@@ -44,25 +45,53 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 //-----------------------------------------------------------------------------------
   //Image Preparation
   Directory statusDirectory;
+  Directory statusTempDirectory;
+  String appDirectoryTempPath;
+
+  List<FileSystemEntity> statusTempFiles;
   List<FileSystemEntity> statusImages;
   List<String> imagePaths;
 
   bool isImageLoading = false;
   bool scanningDone = false;
 
+  String ext = '';
+
   Future<void> getImages() async {
+    bool _inTemp;
+    String _imageName;
+    String _fileName;
+
+    statusTempDirectory = await getApplicationDocumentsDirectory();
+    appDirectoryTempPath = statusTempDirectory.path;
     isImageLoading = true;
-    statusImages = statusDirectory.listSync(followLinks: false);
     imagePaths = List();
+
+    statusFiles = statusDirectory.listSync(followLinks: false);
+    statusTempFiles = statusTempDirectory.listSync(followLinks: false);
     //Sort newest to old
-    statusImages.sort((a, b) => File(b.path)
+    statusFiles.sort((a, b) => File(b.path)
         .lastModifiedSync()
         .toString()
         .compareTo(File(a.path).lastModifiedSync().toString()));
 
-    for (var file in statusImages) {
-      if (file.path.contains('.jpg')) {
-        imagePaths.add(file.path);
+    for (var file in statusFiles) {
+      _fileName = ext + basename(file.path);
+
+      if (_fileName.contains('.jpg')) {
+        _inTemp = false;
+        for (var image in statusTempFiles) {
+          _imageName = basename(image.path);
+          if (_fileName == _imageName) {
+            _inTemp = true;
+            break;
+          }
+        }
+        if (!_inTemp) {
+          print('pic copied');
+          await File(file.path).copy(appDirectoryTempPath + '/' + _fileName);
+        }
+        imagePaths.add(appDirectoryTempPath + '/' + _fileName);
       }
     }
     setState(() {
@@ -75,107 +104,156 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   //----------------ImageEnd-------------------------------------------------------------
 //---------------------------------------------------------------------------------------
   //Video Preparation
-  Directory tempDirectory = Directory(appDirectoryTempPath);
+  Directory thumbDirectory;
+  List<FileSystemEntity> statusFiles;
   List<FileSystemEntity> statusVideos;
   List<FileSystemEntity> videoThumbnails;
   List<String> videoPaths = List();
   List<String> thumbnailPaths = List();
-
-  String ext = '';
 
   bool isVideoLoading = false;
   bool scanningVideosDone = false;
 
   Future<void> getVideos() async {
     isVideoLoading = true;
-    int refreshCount = 0;
-    String fileName;
-    String thumbnailName;
-    bool thumbReady;
+    statusTempDirectory = await getApplicationDocumentsDirectory();
+    appDirectoryTempPath = statusTempDirectory.path;
+
+    int _refreshCount = 0;
+    String _fileName;
+    String _thumbnailTempPath;
+    String _videoName;
+
+    bool _inTemp;
     thumbnailPaths = List();
 
-    statusVideos = statusDirectory.listSync(followLinks: false);
-    statusVideos.sort((a, b) => File(b.path)
+    statusFiles = statusDirectory.listSync(followLinks: false);
+    statusTempFiles = statusTempDirectory.listSync(followLinks: false);
+
+    statusFiles.sort((a, b) => File(b.path)
         .lastModifiedSync()
         .toString()
         .compareTo(File(a.path).lastModifiedSync().toString()));
 
-    videoThumbnails = tempDirectory.listSync(followLinks: false);
-
-    for (var file in statusVideos) {
-      if (file.path.contains('.mp4')) {
-        videoPaths.add(file.path);
-        fileName = basenameWithoutExtension(file.path);
-        thumbReady = false;
-
-        for (var thumbnail in videoThumbnails) {
-          thumbnailName = basenameWithoutExtension(thumbnail.path);
-          if (thumbnailName.contains(fileName + ext)) {
-            thumbnailPaths.add(thumbnail.path);
-            thumbReady = true;
+    for (var file in statusFiles) {
+      _fileName = ext + basename(file.path);
+      if (_fileName.contains('.mp4')) {
+        _inTemp = false;
+        for (var videos in statusTempFiles) {
+          _videoName = basename(videos.path); //Already has ext
+          if (_fileName == _videoName) {
+            _inTemp = true;
             break;
           }
         }
-        if (thumbReady == false) {
-          print('ohoh');
-          final path = await VideoThumbnail.thumbnailFile(
+
+        ///================================
+        _thumbnailTempPath = appDirectoryTempPath +
+            '/' +
+            ext +
+            basenameWithoutExtension(file.path) +
+            '.png';
+        if (!_inTemp) {
+          print('notInTemp: ' + _fileName);
+          await File(file.path).copy(appDirectoryTempPath + '/' + _fileName);
+
+          await VideoThumbnail.thumbnailFile(
             video: file.path,
-            thumbnailPath: appDirectoryTempPath + '/' + fileName + ext + '.png',
+            thumbnailPath: _thumbnailTempPath,
             imageFormat: ImageFormat.PNG,
             quality: 10,
           );
-          thumbnailPaths.add(path);
-          refreshCount++;
+          _refreshCount++;
         }
+        videoPaths.add(appDirectoryTempPath + '/' + _fileName);
+        thumbnailPaths.add(_thumbnailTempPath);
+
         //Dont show loading for long
-        if (refreshCount > 3) {
+        if (_refreshCount > 3) {
           setState(() {
-            videoPaths = videoPaths;
             scanningVideosDone = true;
             thumbnailPaths = thumbnailPaths;
+            videoPaths = videoPaths;
           });
         }
       }
     }
     setState(() {
-      videoPaths = videoPaths;
       isVideoLoading = false;
       scanningVideosDone = true;
+      videoPaths = videoPaths;
       thumbnailPaths = thumbnailPaths;
     });
-    cleanUpThumbs();
+
+    Future.delayed(Duration(seconds: 2), () => cleanUpGarbage());
   }
 
-  void cleanUpThumbs() {
-    bool isDelete;
-    String thumbName;
-    String thumbName2;
+  void cleanUpGarbage() {
+    bool _isDelete;
+    String _thumbName;
+    String _videoName;
+    String _fileName;
+    String _imageName;
 
-    print(videoThumbnails.length.toString());
-    print(thumbnailPaths.length.toString());
-    if (thumbnailPaths.isNotEmpty) {
-      for (var thumbanail in videoThumbnails) {
-        isDelete = true;
-        thumbName = basenameWithoutExtension(thumbanail.path);
-        for (var path in thumbnailPaths) {
-          thumbName2 = basenameWithoutExtension(path);
-          if (thumbName.contains(ext)) {
-            print(thumbName);
-            print(ext);
-            if (thumbName.contains(thumbName2)) {
-              print(thumbName2);
-              isDelete = false;
+    statusTempFiles = statusTempDirectory.listSync(followLinks: false);
+    for (var file in statusTempFiles) {
+      _isDelete = true;
+      _fileName = basename(file.path);
+      if (_fileName.contains(ext)) {
+
+
+        if (videoPaths.isNotEmpty && _fileName.contains('.mp4')) {
+          //print('FileCheck');
+          //print('File: ' + _fileName);
+          //print('files');
+          for (var videos in videoPaths) {
+            _videoName = basename(videos);
+            //print('File: ' + _videoName);
+            if (_fileName == _videoName) {
+              _isDelete = false;
               break;
             }
-          } else {
-            isDelete = false;
+          }
+          if (_isDelete) {
+            print('deleted: ' + _fileName);
+            file.delete();
           }
         }
-        if (isDelete) {
-          print('deleted');
-          print(thumbName2);
-          print('');
-          thumbanail.delete();
+
+        if (imagePaths.isNotEmpty && _fileName.contains('.jpg')) {
+          //print('FileCheck');
+          //print('File: ' + _fileName);
+          //print('files');
+          for (var image in imagePaths) {
+            _imageName = basename(image);
+            //print('File: ' + _imageName);
+            if (_fileName == _imageName) {
+              _isDelete = false;
+              break;
+            }
+          }
+          if (_isDelete) {
+            print('deleted: ' + _fileName);
+            file.delete();
+          }
+        }
+
+        if (thumbnailPaths.isNotEmpty && _fileName.contains('.png')) {
+          //print('FileCheck');
+          //print('File: ' + _fileName);
+          //print('files');
+          for (var thumbnail in thumbnailPaths) {
+            _thumbName = basename(thumbnail);
+            print('File: ' + _thumbName);
+            if (_fileName == _thumbName) {
+              _isDelete = false;
+              break;
+            }
+          }
+          if (_isDelete) {
+            ///print('deleted: ' + _fileName);
+            file.delete();
+          }
         }
       }
     }
@@ -184,11 +262,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   callGetters(statusPath) {
     statusDirectory = Directory(statusPath);
     if (statusPath == statusPathStandard) {
-      ext = 'standard';
+      ext = 'standard-';
     } else if (statusPath == statusPathGB) {
-      ext = 'v-gb';
+      ext = 'gb-';
     } else {
-      ext = 'business';
+      ext = 'business-';
     }
 
     if (!isImageLoading) {

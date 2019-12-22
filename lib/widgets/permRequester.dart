@@ -40,7 +40,7 @@ class PermRequester extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(
-              Icons.sentiment_dissatisfied,
+              Icons.sentiment_satisfied,
               size: 56,
               color: Colors.white,
             ),

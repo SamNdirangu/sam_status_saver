@@ -5,4 +5,5 @@ const statusPathBusiness = '/storage/emulated/0/WhatsApp Business/Media/.Statuse
 const appDirectoryPath = '/storage/emulated/0/Sams Status Saver/';
 const appDirectoryVideoPath = '/storage/emulated/0/Sams Status Saver/Status Videos';
 const appDirectoryImagePath = '/storage/emulated/0/Sams Status Saver/Status Pictures';
-const appDirectoryTempPath = '/storage/emulated/0/Sams Status Saver/.temp';
+const appDirectoryTempPath55 = '/storage/emulated/0/Sams Status Saver/.temp';
+const appDirectoryThumbnailPath = '/storage/emulated/0/Sams Status Saver/.temp/thumbnails';

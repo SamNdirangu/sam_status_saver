@@ -7,16 +7,14 @@ import 'package:sam_status_saver/constants/paths.dart';
 import 'package:unicorndial/unicorndial.dart';
 
 class AppActions {
-
   saveFile(String filePath, bool isImage) {
     String fileName = new DateTime.now().toString();
     if (isImage) {
       File(filePath).copy(appDirectoryImagePath + '/' + fileName + '.jpg');
     } else {
-      File(filePath).copy(appDirectoryVideoPath + '/' + fileName  + '.mp4');
+      File(filePath).copy(appDirectoryVideoPath + '/' + fileName + '.mp4');
     }
   }
-
 
   shareFile(String filePath, bool repost, bool isImage) async {
     String memeType = 'video/mp4';
@@ -26,20 +24,16 @@ class AppActions {
     if (!repost) repostTo = '';
     try {
       final fileBytes = File(filePath).readAsBytesSync();
-      await Share.shareFile(
-        fileBytes,
-        basename(filePath),
-        memeType,
-        shareTitle: 'Share with',
-        appToShare: repostTo,
-        captionText: "Shared via Sam's Status Saver get it here \n\nhttps://github.com/SamNdirangu/SamNdirangu.github.io/blob/master/assets/SamsStatusSaver-v1.0.5.apk");
+      await Share.shareFile(fileBytes, basename(filePath), memeType,
+          shareTitle: 'Share with',
+          appToShare: repostTo,
+          captionText:
+              "Shared via Sam's Status Saver get it here \n\nhttps://github.com/SamNdirangu/SamNdirangu.github.io/blob/master/assets/SamsStatusSaver-v1.0.5.apk");
     } catch (e) {
       print('error: $e');
     }
   }
 }
-
-
 
 class FunctionButtons extends StatelessWidget {
   const FunctionButtons({
@@ -64,7 +58,10 @@ class FunctionButtons extends StatelessWidget {
       hasBackground: false,
       hasNotch: false,
       parentButtonBackground: colorCustom,
-      parentButton: Icon(Icons.add,color: Colors.white,),
+      parentButton: Icon(
+        Icons.add,
+        color: Colors.white,
+      ),
       childButtons: [
         UnicornButton(
           hasLabel: false,
@@ -77,7 +74,10 @@ class FunctionButtons extends StatelessWidget {
             },
             tooltip: 'Save',
             mini: true,
-            child: Icon(Icons.save,color: Colors.white,),
+            child: Icon(
+              Icons.save,
+              color: Colors.white,
+            ),
           ),
         ),
         UnicornButton(
@@ -90,7 +90,10 @@ class FunctionButtons extends StatelessWidget {
             },
             tooltip: 'repost',
             mini: true,
-            child: Icon(Icons.reply,color: Colors.white ,),
+            child: Icon(
+              Icons.reply,
+              color: Colors.white,
+            ),
           ),
         ),
         UnicornButton(
@@ -103,7 +106,10 @@ class FunctionButtons extends StatelessWidget {
             },
             tooltip: 'Share',
             mini: true,
-            child: Icon(Icons.share, color: Colors.white,),
+            child: Icon(
+              Icons.share,
+              color: Colors.white,
+            ),
           ),
         ),
       ],
