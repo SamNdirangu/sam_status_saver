@@ -30,7 +30,7 @@ class StatusVideos extends StatelessWidget {
               SizedBox(
                 height: 30,
               ),
-              Text('Loading... Building video cache for first time',
+              Text('Loading...\n\nCreating a cache',
                   textScaleFactor: 1.2, style: TextStyle(color: Colors.white)),
             ]);
       }
@@ -49,6 +49,14 @@ class StatusVideos extends StatelessWidget {
                   'Hey it seems you dont have any status videos yet.\n\n Once you view a few come back and see them here',
                   style: TextStyle(color: Colors.white),
                 ),
+                SizedBox(height: 20),
+                RaisedButton.icon(
+                  icon: Icon(Icons.refresh,color: Colors.black87),
+                  label: Text('Refresh'),
+                  textColor: Colors.black87,
+                  color: Colors.white,
+                  onPressed: getVideosCallBack,
+                )
               ]),
         );
       }

@@ -83,6 +83,9 @@ class _VideoContentViewState extends State<VideoContentView>
   }
 
   void _checkOtherVideos() {
+     //print('object');
+      //print(currentIndex.toString());
+      //print(videoPaths.length);
     if (currentIndex == 0) {
       setState(() {
         isTherePrev = false;
@@ -91,6 +94,9 @@ class _VideoContentViewState extends State<VideoContentView>
       isTherePrev = true;
     }
     if (currentIndex == (videoPaths.length - 1)) {
+      //print('object');
+      //print(currentIndex.toString());
+      //print(videoPaths.length);
       setState(() {
         isThereNext = false;
       });
@@ -112,13 +118,16 @@ class _VideoContentViewState extends State<VideoContentView>
     });
   }
 
+  bool nextLoading = false;
   void _goNext() async {
-    if (isThereNext) {
+    if (isThereNext && !nextLoading) {
+      nextLoading = true;
+
       _videoPlayerController
           .add(VideoPlayerController.file(File(videoPaths[currentIndex + 1])));
       await _videoPlayerController[currentController + 1].initialize();
 
-      setState(() {
+      setState(() async {
         aspectRatio =
             _videoPlayerController[currentController + 1].value.aspectRatio;
         videoLength =
@@ -137,11 +146,15 @@ class _VideoContentViewState extends State<VideoContentView>
         _videoPlayerController[currentController - 2].dispose();
       }
       _checkOtherVideos();
+      nextLoading = false;
     }
   }
 
+  bool previousLoading = false;
   void _goPrevious() async {
-    if (isTherePrev) {
+    if (isTherePrev && !previousLoading) {
+      previousLoading = true;
+
       _videoPlayerController
           .add(VideoPlayerController.file(File(videoPaths[currentIndex - 1])));
       await _videoPlayerController[currentController + 1].initialize();
@@ -165,12 +178,15 @@ class _VideoContentViewState extends State<VideoContentView>
         _videoPlayerController[currentController - 2].dispose();
       }
       _checkOtherVideos();
+      previousLoading = false;
     }
   }
 
   void seekTo(double e) {
-    final position = Duration(seconds: e.toInt());
-    _videoPlayerController[currentController].seekTo(position);
+    if (!previousLoading && !nextLoading) {
+      final position = Duration(seconds: e.toInt());
+      _videoPlayerController[currentController].seekTo(position);
+    }
   }
 
   void listener() {
@@ -180,7 +196,7 @@ class _VideoContentViewState extends State<VideoContentView>
         _goNext();
       }
     }
-    if(_fabOpacity != 1.0) setState(() {});
+    if (_fabOpacity != 1.0) setState(() {});
   }
 
   Widget controlButtons(BuildContext context) {
@@ -194,74 +210,84 @@ class _VideoContentViewState extends State<VideoContentView>
       child: AnimatedOpacity(
         opacity: 1.0 - _fabOpacity,
         duration: Duration(milliseconds: 300),
-        child: Material(
-          color: Colors.black87,
-          child: Container(
-            width: displayWidth,
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    SizedBox(width: 10),
-                    Text(
-                      '0:' + currrentPosition.toString(),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Container(
-                      width: displayWidth * 0.8,
-                      child: SliderTheme(
-                        data: SliderThemeData(
-                          trackHeight: 10.0,
-                          thumbShape: SliderComponentShape.noThumb,
-                        ),
-                        child: Slider(
-                          min: 0.0,
-                          value: currrentPosition.toDouble(),
-                          max: videoLength.inSeconds.toDouble(),
-                          onChanged: (e) => seekTo(e),
-                          activeColor: Colors.white,
-                          inactiveColor: Colors.white38,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '0:' + videoLength.inSeconds.toString(),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    SizedBox(width: 10),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Container(
-                  width: displayWidth * 0.8,
-                  child: Row(
+        child: IgnorePointer(
+          ignoring: _fabOpacity == 1.0,
+          child: Material(
+            color: Colors.black87,
+            child: Container(
+              width: displayWidth,
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 20),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      IconButton(
-                        iconSize: 42,
-                        icon: Icon(Icons.skip_previous,
-                            color: isTherePrev ? Colors.white : Colors.white38),
-                        onPressed: _goPrevious,
+                      SizedBox(width: 10),
+                      Text(
+                        currrentPosition < 10
+                            ? '0:0' + currrentPosition.toString()
+                            : '0:' + currrentPosition.toString(),
+                        style: TextStyle(color: Colors.white),
                       ),
-                      IconButton(
-                        iconSize: 42,
-                        icon: Icon(!videoPlay ? Icons.play_arrow : Icons.pause,
-                            color: Colors.white),
-                        onPressed: _playPause,
+                      Container(
+                        width: displayWidth * 0.8,
+                        child: SliderTheme(
+                          data: SliderThemeData(
+                            trackHeight: 10.0,
+                            thumbShape: SliderComponentShape.noThumb,
+                          ),
+                          child: Slider(
+                            min: 0.0,
+                            value: currrentPosition.toDouble(),
+                            max: videoLength.inSeconds.toDouble(),
+                            onChanged: (e) => seekTo(e),
+                            activeColor: Colors.white,
+                            inactiveColor: Colors.white38,
+                          ),
+                        ),
                       ),
-                      IconButton(
-                        iconSize: 42,
-                        icon: Icon(Icons.skip_next,
-                            color: isThereNext ? Colors.white : Colors.white38),
-                        onPressed: _goNext,
+                      Text(
+                        videoLength.inSeconds < 10
+                            ? '0:0' + videoLength.inSeconds.toString()
+                            : '0:' + videoLength.inSeconds.toString(),
+                        style: TextStyle(color: Colors.white),
                       ),
+                      SizedBox(width: 10),
                     ],
                   ),
-                ),
-                SizedBox(height: 30),
-              ],
+                  SizedBox(height: 10),
+                  Container(
+                    width: displayWidth * 0.8,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        IconButton(
+                          iconSize: 42,
+                          icon: Icon(Icons.skip_previous,
+                              color:
+                                  isTherePrev ? Colors.white : Colors.white38),
+                          onPressed: _goPrevious,
+                        ),
+                        IconButton(
+                          iconSize: 42,
+                          icon: Icon(
+                              !videoPlay ? Icons.play_arrow : Icons.pause,
+                              color: Colors.white),
+                          onPressed: _playPause,
+                        ),
+                        IconButton(
+                          iconSize: 42,
+                          icon: Icon(Icons.skip_next,
+                              color:
+                                  isThereNext ? Colors.white : Colors.white38),
+                          onPressed: _goNext,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
         ),

@@ -30,7 +30,7 @@ class AppActions {
           captionText:
               "Shared via Sam's Status Saver get it here \n\nhttps://github.com/SamNdirangu/SamNdirangu.github.io/blob/master/assets/SamsStatusSaver-v1.0.5.apk");
     } catch (e) {
-      print('error: $e');
+      //
     }
   }
 }

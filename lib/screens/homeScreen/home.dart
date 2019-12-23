@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   List<FileSystemEntity> statusTempFiles;
   List<FileSystemEntity> statusImages;
-  List<String> imagePaths;
+  List<String> imagePaths = List();
 
   bool isImageLoading = false;
   bool scanningDone = false;
@@ -65,7 +65,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     statusTempDirectory = await getApplicationDocumentsDirectory();
     appDirectoryTempPath = statusTempDirectory.path;
     isImageLoading = true;
+
     imagePaths = List();
+    
 
     statusFiles = statusDirectory.listSync(followLinks: false);
     statusTempFiles = statusTempDirectory.listSync(followLinks: false);
@@ -88,7 +90,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           }
         }
         if (!_inTemp) {
-          print('pic copied');
           await File(file.path).copy(appDirectoryTempPath + '/' + _fileName);
         }
         imagePaths.add(appDirectoryTempPath + '/' + _fileName);
@@ -115,6 +116,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool scanningVideosDone = false;
 
   Future<void> getVideos() async {
+    if (thumbnailPaths.isEmpty) {
+      setState(() {
+        scanningVideosDone = false;
+      });
+    }
+
     isVideoLoading = true;
     statusTempDirectory = await getApplicationDocumentsDirectory();
     appDirectoryTempPath = statusTempDirectory.path;
@@ -126,6 +133,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     bool _inTemp;
     thumbnailPaths = List();
+    videoPaths = List();
+    
+    
 
     statusFiles = statusDirectory.listSync(followLinks: false);
     statusTempFiles = statusTempDirectory.listSync(followLinks: false);
@@ -154,7 +164,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             basenameWithoutExtension(file.path) +
             '.png';
         if (!_inTemp) {
-          print('notInTemp: ' + _fileName);
           await File(file.path).copy(appDirectoryTempPath + '/' + _fileName);
 
           await VideoThumbnail.thumbnailFile(
@@ -164,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             quality: 10,
           );
           _refreshCount++;
+          print('thumbail');
         }
         videoPaths.add(appDirectoryTempPath + '/' + _fileName);
         thumbnailPaths.add(_thumbnailTempPath);
@@ -181,14 +191,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() {
       isVideoLoading = false;
       scanningVideosDone = true;
-      videoPaths = videoPaths;
-      thumbnailPaths = thumbnailPaths;
     });
 
-    Future.delayed(Duration(seconds: 2), () => cleanUpGarbage());
+    cleanUpGarbage();
   }
 
-  void cleanUpGarbage() {
+  void cleanUpGarbage() async {
     bool _isDelete;
     String _thumbName;
     String _videoName;
@@ -196,19 +204,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     String _imageName;
 
     statusTempFiles = statusTempDirectory.listSync(followLinks: false);
+
     for (var file in statusTempFiles) {
       _isDelete = true;
       _fileName = basename(file.path);
       if (_fileName.contains(ext)) {
-
-
-        if (videoPaths.isNotEmpty && _fileName.contains('.mp4')) {
-          //print('FileCheck');
-          //print('File: ' + _fileName);
-          //print('files');
+        //print(_fileName);
+        if (_fileName.contains('.mp4')) {
           for (var videos in videoPaths) {
             _videoName = basename(videos);
-            //print('File: ' + _videoName);
             if (_fileName == _videoName) {
               _isDelete = false;
               break;
@@ -220,13 +224,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           }
         }
 
-        if (imagePaths.isNotEmpty && _fileName.contains('.jpg')) {
-          //print('FileCheck');
-          //print('File: ' + _fileName);
-          //print('files');
+        if (_fileName.contains('.jpg')) {
           for (var image in imagePaths) {
             _imageName = basename(image);
-            //print('File: ' + _imageName);
             if (_fileName == _imageName) {
               _isDelete = false;
               break;
@@ -238,20 +238,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           }
         }
 
-        if (thumbnailPaths.isNotEmpty && _fileName.contains('.png')) {
-          //print('FileCheck');
-          //print('File: ' + _fileName);
-          //print('files');
+        if (_fileName.contains('.png')) {
           for (var thumbnail in thumbnailPaths) {
             _thumbName = basename(thumbnail);
-            print('File: ' + _thumbName);
             if (_fileName == _thumbName) {
               _isDelete = false;
               break;
             }
           }
           if (_isDelete) {
-            ///print('deleted: ' + _fileName);
+            print('deleted: ' + _fileName);
             file.delete();
           }
         }
@@ -273,9 +269,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       getImages();
     }
     if (!isVideoLoading) {
-      setState(() {
-        scanningVideosDone = false;
-      });
       getVideos();
     }
   }
@@ -291,6 +284,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         callGetters(statusPath);
       });
     }
+
+    print(videoPaths.length);
+    print(imagePaths.length);
 
     return Backdrop(
         controller: _animationController,
@@ -325,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 imagePaths: imagePaths,
                 scanningDone: scanningDone,
                 readEnabled: widget.isReadEnabled,
-                getImages: getImages,
+                getImagesCallBack: getImages,
               ),
               StatusVideos(
                   videoPaths: videoPaths,

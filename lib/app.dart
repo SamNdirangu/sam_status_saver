@@ -28,6 +28,7 @@ class App extends StatelessWidget {
   }
 
   appInitializer(BuildContext context) async {
+
     bool isExist = Directory(appDirectoryPath).existsSync();
     if (isExist) {
       isExist = Directory(appDirectoryVideoPath).existsSync();
@@ -45,10 +46,13 @@ class App extends StatelessWidget {
     }
     Provider.of<AppDirectoryState>(context).setDirectoryState();
 
+
+    //=============================================================================
     final statusPaths = Provider.of<StatusDirectoryPath>(context);
     //Check which status folder exists
     isExist = Directory(statusPathStandard).existsSync();
     if (isExist) {
+      //print('found it');
       statusPaths.addStatusPath(statusPathStandard);
     }
 
@@ -63,11 +67,26 @@ class App extends StatelessWidget {
     }
 
     if (statusPaths.statusPathsAvailable.isNotEmpty) {
-      if (await Provider.of<StatusDirectoryFavourite>(context)
-          .getFavouritePath()) {
+      final path = await Provider.of<StatusDirectoryFavourite>(context)
+          .getFavouritePath();
+      if (path=='') {
         Provider.of<StatusDirectoryFavourite>(context)
             .setFavouritePath(statusPaths.statusPathsAvailable[0]);
+
+      } else {
+        bool pathExist = false;
+        for (var pathValue in statusPaths.statusPathsAvailable) {
+          if(pathValue == path){
+            pathExist = true;
+          }
+        }
+        if(!pathExist){
+          Provider.of<StatusDirectoryFavourite>(context)
+            .setFavouritePath(statusPaths.statusPathsAvailable[0]);
+
+        }
       }
+      
       Provider.of<StatusDirectoryState>(context).setDirectoryState();
       Provider.of<RefreshControl>(context).setRefreshState(false);
     }

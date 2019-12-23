@@ -264,7 +264,7 @@ class _BackdropState extends State<Backdrop>
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<DarkThemeState>(context); 
+    final themeProvider = Provider.of<DarkThemeState>(context);
 
     var appBar = AppBar(
       brightness: Brightness.dark,
@@ -278,19 +278,22 @@ class _BackdropState extends State<Backdrop>
       ),
       actions: <Widget>[
         IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () {
-              Share.shareText('$share', 'text/*');
-            },
+          icon: const Icon(Icons.share),
+          onPressed: () {
+            Share.shareText(share, 'text/*');
+          },
         ),
         IconButton(
-          icon: themeProvider.darkThemeState ? Icon(Icons.brightness_7) : Icon(Icons.brightness_3),
+          icon: themeProvider.darkThemeState
+              ? Icon(Icons.brightness_7)
+              : Icon(Icons.brightness_3),
           onPressed: () {
             themeProvider.setDarkTheme(!themeProvider.darkThemeState);
           },
         ),
         IconButton(
-          icon: AnimatedIcon(icon: AnimatedIcons.close_menu,progress:_controller),
+          icon: AnimatedIcon(
+              icon: AnimatedIcons.close_menu, progress: _controller),
           onPressed: _toggleBackdropLayerVisibility,
         )
       ],

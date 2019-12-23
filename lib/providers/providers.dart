@@ -103,9 +103,9 @@ class StatusDirectoryFavourite with ChangeNotifier {
     final value = prefs.getString('favPath');
     if (value != null) {
       _statusPathFavourite = value;
-      return false;
+      return _statusPathFavourite;
     }
-    return true;
+    return '';
   }
 
   setFavouritePath(path) async {
@@ -113,6 +113,7 @@ class StatusDirectoryFavourite with ChangeNotifier {
     prefs.setString('favPath', path);
 
     _statusPathFavourite = path;
+    notifyListeners();
   }
 }
 

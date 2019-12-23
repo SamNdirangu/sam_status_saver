@@ -5,7 +5,7 @@ import 'package:sam_status_saver/widgets/permRequester.dart';
 
 class StatusImages extends StatelessWidget {
   final List<String> imagePaths;
-  final ImagesCallBack getImages;
+  final ImagesCallBack getImagesCallBack;
   final bool scanningDone;
   final bool readEnabled;
 
@@ -14,7 +14,7 @@ class StatusImages extends StatelessWidget {
       @required this.imagePaths,
       @required this.scanningDone,
       @required this.readEnabled,
-      this.getImages})
+      this.getImagesCallBack})
       : super(key: key);
 
   @override
@@ -47,11 +47,19 @@ class StatusImages extends StatelessWidget {
                   'Hey it seems you dont have any status pictues yet.\n\n Once you view a few come back and see them here',
                   style: TextStyle(color: Colors.white),
                 ),
+                SizedBox(height: 20),
+                RaisedButton.icon(
+                  icon: Icon(Icons.refresh,color: Colors.black87),
+                  label: Text('Refresh'),
+                  textColor: Colors.black87,
+                  color: Colors.white,
+                  onPressed: getImagesCallBack,
+                )
               ]),
         );
       }
       return RefreshIndicator(
-          onRefresh: getImages,
+          onRefresh: getImagesCallBack,
           child: GridView.builder(
             gridDelegate:
                 SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -179,7 +180,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
                         textColor: Colors.white,
                         child: Text('Standard'),
                         onPressed: () {
-                          if (versionStandard) {
+                          if (versionStandard && Directory(statusPathStandard).existsSync()) {
                             setState(() {
                               favGB = false;
                               favStandard = true;
@@ -198,7 +199,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
                         color: favGB ? colorCustom : Colors.grey.shade700,
                         textColor: Colors.white,
                         onPressed: () {
-                          if (versionGB) {
+                          if (versionGB && Directory(statusPathGB).existsSync()) {
                             setState(() {
                               favGB = true;
                               favStandard = false;
@@ -217,7 +218,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
                         color: favBusiness ? colorCustom : Colors.grey.shade700,
                         textColor: Colors.white,
                         onPressed: () {
-                          if (versionBusiness) {
+                          if (versionBusiness && Directory(statusPathBusiness).existsSync()) {
                             setState(() {
                               favGB = false;
                               favStandard = false;
