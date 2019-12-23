@@ -11,9 +11,9 @@ import 'package:sam_status_saver/constants/strings.dart';
 import 'package:sam_status_saver/providers/providers.dart';
 
 class BackdropPanel extends StatefulWidget {
-  final GettersCallBack callGetters;
+  final CallerContentCallBack callContentGetter;
 
-  BackdropPanel({Key key, @required this.callGetters}) : super(key: key);
+  BackdropPanel({Key key, @required this.callContentGetter}) : super(key: key);
 
   @override
   _BackdropPanelState createState() => _BackdropPanelState();
@@ -186,7 +186,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
                               favStandard = true;
                               favBusiness = false;
                             });
-                            widget.callGetters(statusPathStandard);
+                            widget.callContentGetter(statusPathStandard);
                             favPathProvider
                                 .setFavouritePath(statusPathStandard);
                           } else {
@@ -205,7 +205,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
                               favStandard = false;
                               favBusiness = false;
                             });
-                            widget.callGetters(statusPathGB);
+                            widget.callContentGetter(statusPathGB);
                             favPathProvider.setFavouritePath(statusPathGB);
                           } else {
                             showErrorMessage(2);
@@ -224,7 +224,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
                               favStandard = false;
                               favBusiness = true;
                             });
-                            widget.callGetters(statusPathBusiness);
+                            widget.callContentGetter(statusPathBusiness);
                             favPathProvider
                                 .setFavouritePath(statusPathBusiness);
                           } else {
@@ -261,7 +261,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
   }
 }
 
-typedef GettersCallBack = dynamic Function(dynamic);
+typedef CallerContentCallBack = dynamic Function(dynamic);
 
 class SaleWidget extends StatelessWidget {
   const SaleWidget({

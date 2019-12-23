@@ -45,7 +45,6 @@ class _VideoContentViewState extends State<VideoContentView>
     currentIndex = widget.currentIndex;
     videoPaths = widget.videoPaths;
     _loadVideo();
-    _showFullScreen();
   }
 
   @override
@@ -61,10 +60,6 @@ class _VideoContentViewState extends State<VideoContentView>
     setState(() {
       _fabOpacity = 1.0 - _fabOpacity;
     });
-  }
-
-  void _showFullScreen() {
-    Future.delayed(Duration(seconds: 2), _toggleFullScreen);
   }
 
   void _loadVideo() async {
@@ -127,7 +122,7 @@ class _VideoContentViewState extends State<VideoContentView>
           .add(VideoPlayerController.file(File(videoPaths[currentIndex + 1])));
       await _videoPlayerController[currentController + 1].initialize();
 
-      setState(() async {
+      setState((){
         aspectRatio =
             _videoPlayerController[currentController + 1].value.aspectRatio;
         videoLength =

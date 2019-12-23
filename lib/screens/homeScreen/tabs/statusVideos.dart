@@ -4,25 +4,27 @@ import 'package:sam_status_saver/screens/contentViewScreens/videoContent.dart';
 import 'package:sam_status_saver/widgets/permRequester.dart';
 
 class StatusVideos extends StatelessWidget {
+  
+  final bool readEnabled;
+  final bool isScanningBegan;
   final List<String> videoPaths;
   final List<String> thumbnailPaths;
-  final VideosCallBack getVideosCallBack;
-  final bool scanningDone;
-  final bool readEnabled;
+  final ContentCallBack getContentCallBack;
+  
 
   const StatusVideos(
-      {Key key,
-      @required this.videoPaths,
-      @required this.thumbnailPaths,
-      @required this.scanningDone,
-      @required this.readEnabled,
-      @required this.getVideosCallBack})
-      : super(key: key);
+      { Key key,
+        @required this.readEnabled,
+        @required this.isScanningBegan,
+        @required this.videoPaths,
+        @required this.thumbnailPaths,      
+        @required this.getContentCallBack
+      }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (readEnabled) {
-      if (!scanningDone) {
+      if (!isScanningBegan) {
         return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -55,13 +57,13 @@ class StatusVideos extends StatelessWidget {
                   label: Text('Refresh'),
                   textColor: Colors.black87,
                   color: Colors.white,
-                  onPressed: getVideosCallBack,
+                  onPressed: getContentCallBack,
                 )
               ]),
         );
       }
       return RefreshIndicator(
-          onRefresh: getVideosCallBack,
+          onRefresh: getContentCallBack,
           child: GridView.builder(
             gridDelegate:
                 SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
@@ -92,4 +94,4 @@ class StatusVideos extends StatelessWidget {
   }
 }
 
-typedef VideosCallBack = Future<void> Function();
+typedef ContentCallBack = Future<void> Function();

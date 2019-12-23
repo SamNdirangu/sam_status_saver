@@ -4,23 +4,24 @@ import 'package:sam_status_saver/screens/contentViewScreens/Imagecontent.dart';
 import 'package:sam_status_saver/widgets/permRequester.dart';
 
 class StatusImages extends StatelessWidget {
-  final List<String> imagePaths;
-  final ImagesCallBack getImagesCallBack;
-  final bool scanningDone;
+
   final bool readEnabled;
+  final bool isScanningBegan;
+  final List<String> imagePaths;
+  final ContentCallBack getContentCallBack;
 
   const StatusImages(
-      {Key key,
-      @required this.imagePaths,
-      @required this.scanningDone,
-      @required this.readEnabled,
-      this.getImagesCallBack})
-      : super(key: key);
+      { Key key,
+        @required this.imagePaths,
+        @required this.readEnabled,
+        @required this.isScanningBegan,
+        @required this.getContentCallBack
+      }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (readEnabled) {
-      if (!scanningDone) {
+      if (!isScanningBegan) {
         return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -53,13 +54,13 @@ class StatusImages extends StatelessWidget {
                   label: Text('Refresh'),
                   textColor: Colors.black87,
                   color: Colors.white,
-                  onPressed: getImagesCallBack,
+                  onPressed: getContentCallBack,
                 )
               ]),
         );
       }
       return RefreshIndicator(
-          onRefresh: getImagesCallBack,
+          onRefresh: getContentCallBack,
           child: GridView.builder(
             gridDelegate:
                 SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
@@ -90,4 +91,4 @@ class StatusImages extends StatelessWidget {
   }
 }
 
-typedef ImagesCallBack = Future<void> Function();
+typedef ContentCallBack = Future<void> Function();
