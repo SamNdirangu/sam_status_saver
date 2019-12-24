@@ -75,7 +75,7 @@ class StatusImages extends StatelessWidget {
                             imagePaths: imagePaths, currentIndex: index)));
                   },
                   child: Hero(
-                    tag: index.toString(),
+                    tag: imagePaths[index],
                     child: Image.file(
                       File(imagePaths[index]),
                       fit: BoxFit.cover,

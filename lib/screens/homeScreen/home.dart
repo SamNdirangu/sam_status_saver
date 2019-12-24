@@ -61,7 +61,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   //Get out contnet
   Future<void> getContent() async {
-    isContentLoading = true; //Store our content loading status
+    setState(() {
+      isContentLoading = true; //Store our content loading status
+      isScanningBegan = false;
+    });
+    
       
 
     int _refreshCount = 0; //Refresh the view after some time
@@ -138,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         
       }
       if(_refreshCount > 2){
+        _refreshCount = 0;
         setState(() {
           isScanningBegan = true;
           imagePaths = imagePaths;

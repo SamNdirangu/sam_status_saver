@@ -82,13 +82,12 @@ class _ImageContentViewState extends State<ImageContentView>
         key: _scaffoldKey,
         backgroundColor: Colors.black,
         body: Hero(
-          tag: widget.currentIndex.toString(),
-          child: TabBarView(
-            controller: tabController,
-            children: imageTabs,
-            dragStartBehavior: DragStartBehavior.down,
-          ),
-        ),
+            tag: widget.imagePaths[tabController.index],
+            child: TabBarView(
+              controller: tabController,
+              children: imageTabs,
+              dragStartBehavior: DragStartBehavior.down,
+            )),
         floatingActionButton: AnimatedOpacity(
             opacity: _fabOpacity,
             duration: Duration(milliseconds: 300),
