@@ -32,7 +32,7 @@ class StatusVideos extends StatelessWidget {
               SizedBox(
                 height: 30,
               ),
-              Text('Loading...\n\nCreating a cache',
+              Text('Keep calm.\nGrabbing them videos',textAlign: TextAlign.center,
                   textScaleFactor: 1.2, style: TextStyle(color: Colors.white)),
             ]);
       }

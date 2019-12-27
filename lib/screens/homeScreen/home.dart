@@ -24,10 +24,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   TabController _tabController;
   AnimationController _animationController;
+  bool isReadEnabled = false;
 
   @override
   void initState() {
     super.initState();
+    isReadEnabled = widget.isReadEnabled;
     _tabController = TabController(length: 2, vsync: this);
     _animationController = AnimationController(
         duration: Duration(milliseconds: 300), value: 1.0, vsync: this);
@@ -44,119 +46,127 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   //Image Preparation
   Directory statusDirectory; //To store our status directory
 
-  List<FileSystemEntity> statusFiles; //List to store our files in the status folder
-  List<FileSystemEntity> statusTempFiles; //List for all files in the tempp folder
-  
+  List<FileSystemEntity>
+      statusFiles; //List to store our files in the status folder
+  List<FileSystemEntity>
+      statusTempFiles; //List for all files in the tempp folder
+
   List<String> imagePaths = List(); //List to store the image paths of pictures
   List<String> videoPaths = List(); //List to store the video paths of videos
-  List<String> thumbnailPaths = List(); //List to store the paths of thumbanils of videos
+  List<String> thumbnailPaths =
+      List(); //List to store the paths of thumbanils of videos
 
   String appDirectoryTempPath; //String to hold the temp directory path
 
   bool loadGetter = true; //Whether to load getContent function automatically
   bool isScanningBegan = false; //To store the state of scanning progress.
-  bool isContentLoading = false; //Store the state whether th getContent function is still running
-  
-  String ext = ''; //To store the version whatsapp extension to distinguish between different versions
+  bool isContentLoading =
+      false; //Store the state whether th getContent function is still running
+
+  String ext =
+      ''; //To store the version whatsapp extension to distinguish between different versions
 
   //Get out contnet
   Future<void> getContent() async {
-    setState(() {
-      isContentLoading = true; //Store our content loading status
-      isScanningBegan = false;
-    });
-    
-      
+    if (statusDirectory.existsSync()) {
+      setState(() {
+        isReadEnabled = true;
+        isContentLoading = true; //Store our content loading status
+      });
 
-    int _refreshCount = 0; //Refresh the view after some time
-    bool _inTemp = false; //Store whhether a file is present in temp directory
-    String _fileName; //Store file name without file extension
-    String _fileNameExt; //store our file name with extension
+      bool _inTemp = false; //Store whhether a file is present in temp directory
+      String _fileName; //Store file name without file extension
+      String _fileNameExt; //store our file name with extension
 
-    //Reset our lists
-    imagePaths = List();
-    videoPaths = List();
-    thumbnailPaths = List();
+      //Reset our lists
+      imagePaths = List();
+      videoPaths = List();
+      thumbnailPaths = List();
 
-    //Get our temp directory
-    appDirectoryTempPath = (await getApplicationDocumentsDirectory()).path;
-    
-    //generate list of our status and temp directories
-    statusFiles = statusDirectory.listSync(followLinks: false);
-    statusTempFiles = Directory(appDirectoryTempPath).listSync(followLinks: false);
+      //Get our temp directory
+      appDirectoryTempPath = (await getApplicationDocumentsDirectory()).path;
 
-    //Sort newest to old files.
-    statusFiles.sort((a, b) => File(b.path)
-        .lastModifiedSync()
-        .toString()
-        .compareTo(File(a.path).lastModifiedSync().toString()));
+      //generate list of our status and temp directories
+      statusFiles = statusDirectory.listSync(followLinks: false);
+      statusTempFiles =
+          Directory(appDirectoryTempPath).listSync(followLinks: false);
 
-    //Start looping through each of the files
-    for (var file in statusFiles) {
-      _fileName =  ext + basenameWithoutExtension(file.path);
-      _fileNameExt = ext + basename(file.path); //add the version textension to the name string.
-      final _thumbnailTempPath = appDirectoryTempPath + '/' + _fileName + '.png';
+      //Sort newest to old files.
+      statusFiles.sort((a, b) => File(b.path)
+          .lastModifiedSync()
+          .toString()
+          .compareTo(File(a.path).lastModifiedSync().toString()));
 
-      //Check if file exist in temp directory
-      _inTemp = false;
-      for (var tempFile in statusTempFiles) {
-        final tempFileName = basenameWithoutExtension(tempFile.path);
-        if(_fileName == tempFileName){
-          _inTemp =true;
-          break;
-        }        
-      }
-      //if file was found in temp directory
-      if(_inTemp) {
-        //Check if file is an image
-        if (_fileNameExt.contains('.jpg')) {
-          imagePaths.add(appDirectoryTempPath + '/' + _fileNameExt);
+      //Start looping through each of the files
+      for (var file in statusFiles) {
+        _fileName = ext + basenameWithoutExtension(file.path);
+        _fileNameExt = ext +
+            basename(
+                file.path); //add the version textension to the name string.
+        final _thumbnailTempPath =
+            appDirectoryTempPath + '/' + _fileName + '.png';
+
+        //Check if file exist in temp directory
+        _inTemp = false;
+        for (var tempFile in statusTempFiles) {
+          final tempFileName = basenameWithoutExtension(tempFile.path);
+          if (_fileName == tempFileName) {
+            _inTemp = true;
+            break;
+          }
         }
-        if (_fileNameExt.contains('.mp4')) {
-          videoPaths.add(appDirectoryTempPath + '/' + _fileNameExt);
-          thumbnailPaths.add(_thumbnailTempPath);
+        //if file was found in temp directory
+        if (_inTemp) {
+          //Check if file is an image
+          if (_fileNameExt.contains('.jpg')) {
+            imagePaths.add(appDirectoryTempPath + '/' + _fileNameExt);
+          }
+          if (_fileNameExt.contains('.mp4')) {
+            videoPaths.add(appDirectoryTempPath + '/' + _fileNameExt);
+            thumbnailPaths.add(_thumbnailTempPath);
+          }
+        } else {
+          //If file wasnt found in temp
+          //Copy the file to the temp directory
+          await File(file.path).copy(appDirectoryTempPath + '/' + _fileNameExt);
 
-        }
-      } else { //If file wasnt found in temp
-        //Copy the file to the temp directory
-         await File(file.path).copy(appDirectoryTempPath + '/' + _fileNameExt);
-        
-        //Check the file type
-        if (_fileNameExt.contains('.jpg')) {
-          imagePaths.add(appDirectoryTempPath + '/' + _fileNameExt);
-        }
-        if (_fileNameExt.contains('.mp4')) {
-          
-          //Create a thumbanil of the video
-          await VideoThumbnail.thumbnailFile(
-            video: file.path,
-            thumbnailPath: _thumbnailTempPath,
-            imageFormat: ImageFormat.PNG,
-            quality: 10,
-          );
+          //Check the file type
+          if (_fileNameExt.contains('.jpg')) {
+            imagePaths.add(appDirectoryTempPath + '/' + _fileNameExt);
+          }
+          if (_fileNameExt.contains('.mp4')) {
+            //Create a thumbanil of the video
+            await VideoThumbnail.thumbnailFile(
+              video: file.path,
+              thumbnailPath: _thumbnailTempPath,
+              imageFormat: ImageFormat.PNG,
+              quality: 10,
+            );
 
-          videoPaths.add(appDirectoryTempPath + '/' + _fileNameExt);
-          thumbnailPaths.add(_thumbnailTempPath);
-          _refreshCount++;
+            videoPaths.add(appDirectoryTempPath + '/' + _fileNameExt);
+            thumbnailPaths.add(_thumbnailTempPath);
+          }
         }
-        
-      }
-      if(_refreshCount > 2){
-        _refreshCount = 0;
         setState(() {
           isScanningBegan = true;
           imagePaths = imagePaths;
-          videoPaths = videoPaths;          
+          videoPaths = videoPaths;
         });
       }
+      setState(() {
+        isScanningBegan = true;
+        imagePaths = imagePaths;
+        videoPaths = videoPaths;
+      });
+      cleanUpGarbage();
+      isContentLoading = false;
+    } else {
+      setState(() {
+        isContentLoading = false;
+        isScanningBegan = true;
+        isReadEnabled = false;
+      });
     }
-    setState(() {
-      isScanningBegan = true;
-      imagePaths = imagePaths;
-      videoPaths = videoPaths;      
-    });
-    cleanUpGarbage();
-    isContentLoading = false;
   }
 
   void cleanUpGarbage() async {
@@ -205,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           for (var thumbnail in thumbnailPaths) {
             _thumbName = basename(thumbnail);
             //print(_thumbName);
-            if (_fileName == _thumbName) {    
+            if (_fileName == _thumbName) {
               _isDelete = false;
               break;
             }
@@ -230,6 +240,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
 
     if (!isContentLoading) {
+      setState(() {
+        isScanningBegan = false;
+      });
       getContent();
     }
   }
@@ -241,6 +254,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       final statusPath =
           Provider.of<StatusDirectoryFavourite>(context).statusPathsFavourite;
       loadGetter = false;
+
       callGetter(statusPath);
     }
 
@@ -276,19 +290,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               StatusImages(
                 imagePaths: imagePaths,
                 isScanningBegan: isScanningBegan,
-                readEnabled: widget.isReadEnabled,
+                readEnabled: isReadEnabled,
                 getContentCallBack: getContent,
               ),
               StatusVideos(
                   videoPaths: videoPaths,
                   thumbnailPaths: thumbnailPaths,
                   isScanningBegan: isScanningBegan,
-                  readEnabled: widget.isReadEnabled,
-                  getContentCallBack: getContent
-              ),
-            ]
-          )
-        )
-    );
+                  readEnabled: isReadEnabled,
+                  getContentCallBack: getContent),
+            ],
+          ),
+        ));
   }
 }

@@ -4,19 +4,18 @@ import 'package:sam_status_saver/screens/contentViewScreens/Imagecontent.dart';
 import 'package:sam_status_saver/widgets/permRequester.dart';
 
 class StatusImages extends StatelessWidget {
-
   final bool readEnabled;
   final bool isScanningBegan;
   final List<String> imagePaths;
   final ContentCallBack getContentCallBack;
 
   const StatusImages(
-      { Key key,
-        @required this.imagePaths,
-        @required this.readEnabled,
-        @required this.isScanningBegan,
-        @required this.getContentCallBack
-      }) : super(key: key);
+      {Key key,
+      @required this.imagePaths,
+      @required this.readEnabled,
+      @required this.isScanningBegan,
+      @required this.getContentCallBack})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +28,7 @@ class StatusImages extends StatelessWidget {
               SizedBox(
                 height: 30,
               ),
-              Text('Loading... Hold on a moment',
+              Text('Keep calm.\nGrabbing them pics',textAlign: TextAlign.center,
                   textScaleFactor: 1.2, style: TextStyle(color: Colors.white)),
             ]);
       }
@@ -50,7 +49,7 @@ class StatusImages extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 RaisedButton.icon(
-                  icon: Icon(Icons.refresh,color: Colors.black87),
+                  icon: Icon(Icons.refresh, color: Colors.black87),
                   label: Text('Refresh'),
                   textColor: Colors.black87,
                   color: Colors.white,

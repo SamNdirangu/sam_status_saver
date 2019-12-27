@@ -28,7 +28,7 @@ class AppActions {
           shareTitle: 'Share with',
           appToShare: repostTo,
           captionText:
-              "Shared via Sam's Status Saver get it here \n\nhttps://github.com/SamNdirangu/SamNdirangu.github.io/blob/master/assets/SamsStatusSaver-v1.0.5.apk");
+              "Shared via Sam's Status Saver get it here \n\nhttps://github.com/SamNdirangu/SamNdirangu.github.io/releases/download/status-saver/SamsStatusSaver.apk");
     } catch (e) {
       //
     }

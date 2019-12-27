@@ -20,13 +20,11 @@ class BackdropPanel extends StatefulWidget {
 }
 
 class _BackdropPanelState extends State<BackdropPanel> {
-  bool versionStandard;
-  bool versionGB;
-  bool versionBusiness;
+  bool initialise = true;
 
-  bool favStandard;
-  bool favGB;
-  bool favBusiness;
+  bool favGB = false;
+  bool favStandard = false;
+  bool favBusiness = false;
 
   double isMessageOpacity = 0.0;
   String infoMessage = '';
@@ -39,6 +37,48 @@ class _BackdropPanelState extends State<BackdropPanel> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  handleStandard(favPathProvider) {
+    if (Directory(statusPathStandard).existsSync()) {
+      setState(() {
+        favGB = false;
+        favStandard = true;
+        favBusiness = false;
+      });
+      widget.callContentGetter(statusPathStandard);
+      favPathProvider.setFavouritePath(statusPathStandard);
+    } else {
+      showErrorMessage(1);
+    }
+  }
+
+  handleGB(favPathProvider) {
+    if (Directory(statusPathGB).existsSync()) {
+      setState(() {
+        favGB = true;
+        favStandard = false;
+        favBusiness = false;
+      });
+      widget.callContentGetter(statusPathGB);
+      favPathProvider.setFavouritePath(statusPathGB);
+    } else {
+      showErrorMessage(2);
+    }
+  }
+
+  handleBusiness(favPathProvider) {
+    if (Directory(statusPathBusiness).existsSync()) {
+      setState(() {
+        favGB = false;
+        favStandard = false;
+        favBusiness = true;
+      });
+      widget.callContentGetter(statusPathBusiness);
+      favPathProvider.setFavouritePath(statusPathBusiness);
+    } else {
+      showErrorMessage(3);
+    }
   }
 
   void showErrorMessage(code) {
@@ -75,33 +115,15 @@ class _BackdropPanelState extends State<BackdropPanel> {
 
   @override
   Widget build(BuildContext context) {
-    versionStandard = false;
-    versionGB = false;
-    versionBusiness = false;
-
-    favStandard = false;
-    favGB = false;
-    favBusiness = false;
-
-    final statusPaths = Provider.of<StatusDirectoryPath>(context);
     final favPathProvider = Provider.of<StatusDirectoryFavourite>(context);
-
-    for (var path in statusPaths.statusPathsAvailable) {
-      if (path == statusPathStandard) {
-        versionStandard = true;
-        if (path == favPathProvider.statusPathsFavourite) {
+    if (initialise) {
+      if (Provider.of<StatusDirectoryState>(context).directoryExists) {
+        initialise = false;
+        if (favPathProvider.statusPathsFavourite == statusPathStandard) {
           favStandard = true;
-        }
-      }
-      if (path == statusPathGB) {
-        versionGB = true;
-        if (path == favPathProvider.statusPathsFavourite) {
+        } else if (favPathProvider.statusPathsFavourite == statusPathGB) {
           favGB = true;
-        }
-      }
-      if (path == statusPathBusiness) {
-        versionBusiness = true;
-        if (path == favPathProvider.statusPathsFavourite) {
+        } else {
           favBusiness = true;
         }
       }
@@ -176,61 +198,23 @@ class _BackdropPanelState extends State<BackdropPanel> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       RaisedButton(
-                        color: favStandard ? colorCustom : Colors.grey.shade700,
-                        textColor: Colors.white,
-                        child: Text('Standard'),
-                        onPressed: () {
-                          if (versionStandard && Directory(statusPathStandard).existsSync()) {
-                            setState(() {
-                              favGB = false;
-                              favStandard = true;
-                              favBusiness = false;
-                            });
-                            widget.callContentGetter(statusPathStandard);
-                            favPathProvider
-                                .setFavouritePath(statusPathStandard);
-                          } else {
-                            showErrorMessage(1);
-                          }
-                        },
-                      ),
+                          color:
+                              favStandard ? colorCustom : Colors.grey.shade700,
+                          textColor: Colors.white,
+                          child: Text('Standard'),
+                          onPressed: () => handleStandard(favPathProvider)),
                       SizedBox(width: 20),
                       RaisedButton(
                         color: favGB ? colorCustom : Colors.grey.shade700,
                         textColor: Colors.white,
-                        onPressed: () {
-                          if (versionGB && Directory(statusPathGB).existsSync()) {
-                            setState(() {
-                              favGB = true;
-                              favStandard = false;
-                              favBusiness = false;
-                            });
-                            widget.callContentGetter(statusPathGB);
-                            favPathProvider.setFavouritePath(statusPathGB);
-                          } else {
-                            showErrorMessage(2);
-                          }
-                        },
+                        onPressed: () => handleGB(favPathProvider),
                         child: Text('GB'),
                       ),
                       SizedBox(width: 20),
                       RaisedButton(
                         color: favBusiness ? colorCustom : Colors.grey.shade700,
                         textColor: Colors.white,
-                        onPressed: () {
-                          if (versionBusiness && Directory(statusPathBusiness).existsSync()) {
-                            setState(() {
-                              favGB = false;
-                              favStandard = false;
-                              favBusiness = true;
-                            });
-                            widget.callContentGetter(statusPathBusiness);
-                            favPathProvider
-                                .setFavouritePath(statusPathBusiness);
-                          } else {
-                            showErrorMessage(3);
-                          }
-                        },
+                        onPressed: () => handleBusiness(favPathProvider),
                         child: Text('Buisness'),
                       ),
                     ],
