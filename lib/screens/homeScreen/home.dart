@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sam_status_saver/widgets/adMob.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 import 'package:sam_status_saver/constants/paths.dart';
@@ -24,12 +26,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   TabController _tabController;
   AnimationController _animationController;
-  bool isReadEnabled = false;
+  bool isReadEnabled = true;
 
   @override
   void initState() {
     super.initState();
-    isReadEnabled = widget.isReadEnabled;
     _tabController = TabController(length: 2, vsync: this);
     _animationController = AnimationController(
         duration: Duration(milliseconds: 300), value: 1.0, vsync: this);
@@ -49,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<FileSystemEntity>
       statusFiles; //List to store our files in the status folder
   List<FileSystemEntity>
-      statusTempFiles; //List for all files in the tempp folder
+      statusTempFiles; //List for all files in the temp folder
 
   List<String> imagePaths = List(); //List to store the image paths of pictures
   List<String> videoPaths = List(); //List to store the video paths of videos
@@ -68,12 +69,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   //Get out contnet
   Future<void> getContent() async {
+    isContentLoading = true; //Store our content loading status
     if (statusDirectory.existsSync()) {
-      setState(() {
-        isReadEnabled = true;
-        isContentLoading = true; //Store our content loading status
-      });
-
+      if (!isReadEnabled) {
+        setState(() {
+          isReadEnabled = true;
+        });
+      }
       bool _inTemp = false; //Store whhether a file is present in temp directory
       String _fileName; //Store file name without file extension
       String _fileNameExt; //store our file name with extension
@@ -153,11 +155,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           videoPaths = videoPaths;
         });
       }
-      setState(() {
-        isScanningBegan = true;
-        imagePaths = imagePaths;
-        videoPaths = videoPaths;
-      });
       cleanUpGarbage();
       isContentLoading = false;
     } else {
@@ -254,7 +251,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       final statusPath =
           Provider.of<StatusDirectoryFavourite>(context).statusPathsFavourite;
       loadGetter = false;
-
+      if (Directory(statusPath).existsSync()) {
+        isReadEnabled = true;
+      }
       callGetter(statusPath);
     }
 
@@ -284,21 +283,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           backgroundColor: Colors.black87,
-          body: TabBarView(
-            controller: _tabController,
+          body: Stack(
             children: <Widget>[
-              StatusImages(
-                imagePaths: imagePaths,
-                isScanningBegan: isScanningBegan,
-                readEnabled: isReadEnabled,
-                getContentCallBack: getContent,
+              TabBarView(
+                controller: _tabController,
+                children: <Widget>[
+                  StatusImages(
+                    imagePaths: imagePaths,
+                    isScanningBegan: isScanningBegan,
+                    readEnabled: isReadEnabled,
+                    getContentCallBack: getContent,
+                  ),
+                  StatusVideos(
+                      videoPaths: videoPaths,
+                      thumbnailPaths: thumbnailPaths,
+                      isScanningBegan: isScanningBegan,
+                      readEnabled: isReadEnabled,
+                      getContentCallBack: getContent),
+                ],
               ),
-              StatusVideos(
-                  videoPaths: videoPaths,
-                  thumbnailPaths: thumbnailPaths,
-                  isScanningBegan: isScanningBegan,
-                  readEnabled: isReadEnabled,
-                  getContentCallBack: getContent),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: AdmobBanner(
+                  adUnitId: getBannerAdUnitId(),
+                  adSize: AdmobBannerSize.LEADERBOARD,
+                ),
+              ),
             ],
           ),
         ));

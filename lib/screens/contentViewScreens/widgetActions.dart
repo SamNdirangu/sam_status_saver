@@ -25,10 +25,9 @@ class AppActions {
     try {
       final fileBytes = File(filePath).readAsBytesSync();
       await Share.shareFile(fileBytes, basename(filePath), memeType,
-          shareTitle: 'Share with',
-          appToShare: repostTo,
-          captionText:
-              "Shared via Sam's Status Saver get it here \n\nhttps://github.com/SamNdirangu/SamNdirangu.github.io/releases/download/status-saver/SamsStatusSaver.apk");
+        shareTitle: 'Share with',
+        appToShare: repostTo
+      );
     } catch (e) {
       //
     }
