@@ -67,8 +67,12 @@ class StatusVideos extends StatelessWidget {
           child: GridView.builder(
             gridDelegate:
                 SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-            itemCount: thumbnailPaths.length,
+            itemCount: thumbnailPaths.length + 2,
             itemBuilder: (BuildContext context, int index) {
+              if(index >= thumbnailPaths.length){
+                return Container(); 
+                //Add an empty space to push content up to prevent overlapping with ad
+              }
               return Padding(
                 padding: const EdgeInsets.all(1.0),
                 child: GestureDetector(

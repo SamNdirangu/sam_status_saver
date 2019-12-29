@@ -26,6 +26,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   TabController _tabController;
   AnimationController _animationController;
+  bool isAdVisible = false;
   bool isReadEnabled = true;
 
   @override
@@ -59,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   String appDirectoryTempPath; //String to hold the temp directory path
 
+  bool _changePresent = true;
   bool loadGetter = true; //Whether to load getContent function automatically
   bool isScanningBegan = false; //To store the state of scanning progress.
   bool isContentLoading =
@@ -76,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           isReadEnabled = true;
         });
       }
+      int _refreshCount = 0;
       bool _inTemp = false; //Store whhether a file is present in temp directory
       String _fileName; //Store file name without file extension
       String _fileNameExt; //store our file name with extension
@@ -129,14 +132,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           }
         } else {
           //If file wasnt found in temp
-          //Copy the file to the temp directory
-          await File(file.path).copy(appDirectoryTempPath + '/' + _fileNameExt);
 
           //Check the file type
           if (_fileNameExt.contains('.jpg')) {
+            _changePresent = true;
+            //Copy the file to the temp directory
+            await File(file.path)
+                .copy(appDirectoryTempPath + '/' + _fileNameExt);
             imagePaths.add(appDirectoryTempPath + '/' + _fileNameExt);
           }
+
           if (_fileNameExt.contains('.mp4')) {
+            _changePresent = true;
+            //Copy the file to the temp directory
+            await File(file.path)
+                .copy(appDirectoryTempPath + '/' + _fileNameExt);
             //Create a thumbanil of the video
             await VideoThumbnail.thumbnailFile(
               video: file.path,
@@ -147,8 +157,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
             videoPaths.add(appDirectoryTempPath + '/' + _fileNameExt);
             thumbnailPaths.add(_thumbnailTempPath);
+            _refreshCount++;
           }
         }
+        if (_refreshCount > 1) {
+          _refreshCount = 0;
+          setState(() {
+            isScanningBegan = true;
+            imagePaths = imagePaths;
+            videoPaths = videoPaths;
+          });
+        }
+      }
+      isContentLoading = false;
+      
+      if (_changePresent) {
+        _changePresent = false;
         setState(() {
           isScanningBegan = true;
           imagePaths = imagePaths;
@@ -156,7 +180,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         });
       }
       cleanUpGarbage();
-      isContentLoading = false;
     } else {
       setState(() {
         isContentLoading = false;
@@ -165,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       });
     }
   }
-
+  //=======================Garbage Cleanup=======================================
   void cleanUpGarbage() async {
     bool _isDelete;
     String _thumbName;
@@ -225,7 +248,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       }
     }
   }
-
+  //=======================Garbage Cleanup End=======================================
+  
+  //=======================Call Getters=======================================
   callGetter(statusPath) {
     statusDirectory = Directory(statusPath);
     if (statusPath == statusPathStandard) {
@@ -239,12 +264,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (!isContentLoading) {
       setState(() {
         isScanningBegan = false;
+        _changePresent = true;
       });
       getContent();
     }
   }
+  //=======================Call Getters=======================================
 
-  //--------------------Video End--------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     if (widget.isReadEnabled && loadGetter) {
@@ -258,59 +284,64 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
 
     return Backdrop(
-        controller: _animationController,
-        backTitle: Text('More'),
-        backLayer: BackdropPanel(
-          callContentGetter: callGetter,
-        ),
-        frontTitle: Text("Sam's Status Saver"),
-        frontLayer: Scaffold(
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(kToolbarHeight),
-            child: Material(
-              color: Theme.of(context).primaryColor,
-              child: TabBar(
-                controller: _tabController,
-                indicatorWeight: 3,
-                indicatorColor: Colors.white,
-                tabs: <Widget>[
-                  Tab(
-                    text: 'Images',
-                  ),
-                  Tab(text: 'Videos')
-                ],
-              ),
+      controller: _animationController,
+      backTitle: Text('More'),
+      backLayer: BackdropPanel(
+        callContentGetter: callGetter,
+      ),
+      frontTitle: Text("Sam's Status Saver"),
+      frontLayer: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: Material(
+            color: Theme.of(context).primaryColor,
+            child: TabBar(
+              controller: _tabController,
+              indicatorWeight: 3,
+              indicatorColor: Colors.white,
+              tabs: <Widget>[
+                Tab(
+                  text: 'Images',
+                ),
+                Tab(text: 'Videos')
+              ],
             ),
           ),
-          backgroundColor: Colors.black87,
-          body: Stack(
-            children: <Widget>[
-              TabBarView(
-                controller: _tabController,
-                children: <Widget>[
-                  StatusImages(
-                    imagePaths: imagePaths,
-                    isScanningBegan: isScanningBegan,
-                    readEnabled: isReadEnabled,
-                    getContentCallBack: getContent,
-                  ),
-                  StatusVideos(
-                      videoPaths: videoPaths,
-                      thumbnailPaths: thumbnailPaths,
-                      isScanningBegan: isScanningBegan,
-                      readEnabled: isReadEnabled,
-                      getContentCallBack: getContent),
-                ],
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: AdmobBanner(
-                  adUnitId: getBannerAdUnitId(),
-                  adSize: AdmobBannerSize.LEADERBOARD,
+        ),
+        backgroundColor: Colors.black,
+        body: Stack(
+          children: <Widget>[
+            TabBarView(
+              controller: _tabController,
+              children: <Widget>[
+                StatusImages(
+                  imagePaths: imagePaths,
+                  isScanningBegan: isScanningBegan,
+                  readEnabled: isReadEnabled,
+                  getContentCallBack: getContent,
                 ),
-              ),
-            ],
-          ),
-        ));
+                StatusVideos(
+                  videoPaths: videoPaths,
+                  thumbnailPaths: thumbnailPaths,
+                  isScanningBegan: isScanningBegan,
+                  readEnabled: isReadEnabled,
+                  getContentCallBack: getContent),
+              ],
+            ),
+            Align(
+                alignment: Alignment.bottomLeft,
+                child: !isContentLoading
+                  ? AdmobBanner(
+                      adUnitId: getBannerAdUnitId(),
+                      adSize: AdmobBannerSize(
+                        width: MediaQuery.of(context).size.width.toInt(),
+                        height: 90,
+                        name: 'CUSTOM_BANNER'),
+                    )
+                  : Container()),
+          ],
+        ),
+      )
+    );
   }
 }

@@ -63,8 +63,11 @@ class StatusImages extends StatelessWidget {
           child: GridView.builder(
             gridDelegate:
                 SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-            itemCount: imagePaths.length,
+            itemCount: imagePaths.length + 2,
             itemBuilder: (BuildContext context, int index) {
+              if(index >= imagePaths.length){
+                return Container();
+              }
               return Padding(
                 padding: const EdgeInsets.all(1.0),
                 child: GestureDetector(
@@ -74,6 +77,7 @@ class StatusImages extends StatelessWidget {
                             imagePaths: imagePaths, currentIndex: index)));
                   },
                   child: Hero(
+                    
                     tag: imagePaths[index],
                     child: Image.file(
                       File(imagePaths[index]),
