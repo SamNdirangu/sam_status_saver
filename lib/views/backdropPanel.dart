@@ -168,7 +168,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
-                                "Version: 1.0.6",
+                                "Version: 1.0.7",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black87),
