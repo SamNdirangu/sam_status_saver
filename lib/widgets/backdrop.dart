@@ -280,7 +280,7 @@ class _BackdropState extends State<Backdrop>
         IconButton(
           icon: const Icon(Icons.share),
           onPressed: () {
-            Share.shareText(share, 'text/*');
+            Share.shareText(share, 'text/*',shareTitle: 'Share App link via');
           },
         ),
         IconButton(

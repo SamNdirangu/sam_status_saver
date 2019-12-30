@@ -1,14 +1,15 @@
 import 'dart:io';
 
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sam_status_saver/widgets/adMob.dart';
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
+import 'package:sam_status_saver/widgets/adMob.dart';
 import 'package:sam_status_saver/constants/paths.dart';
+import 'package:sam_status_saver/constants/strings.dart';
 import 'package:sam_status_saver/widgets/backdrop.dart';
 import 'package:sam_status_saver/providers/providers.dart';
 import 'package:sam_status_saver/views/backdropPanel.dart';
@@ -26,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   TabController _tabController;
   AnimationController _animationController;
-  bool isAdVisible = false;
+  
   bool isReadEnabled = true;
 
   @override
@@ -66,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool isContentLoading =
       false; //Store the state whether th getContent function is still running
 
-  String ext =
+  String versionExt =
       ''; //To store the version whatsapp extension to distinguish between different versions
 
   //Get out contnet
@@ -104,10 +105,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
       //Start looping through each of the files
       for (var file in statusFiles) {
-        _fileName = ext + basenameWithoutExtension(file.path);
-        _fileNameExt = ext +
+        _fileName = versionExt + basenameWithoutExtension(file.path);
+        _fileNameExt = versionExt +
             basename(
                 file.path); //add the version textension to the name string.
+
         final _thumbnailTempPath =
             appDirectoryTempPath + '/' + _fileName + '.png';
 
@@ -199,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     for (var file in statusTempFiles) {
       _isDelete = true;
       _fileName = basename(file.path);
-      if (_fileName.contains(ext)) {
+      if (_fileName.contains(versionExt)) {
         //print(_fileName);
         if (_fileName.contains('.mp4')) {
           for (var videos in videoPaths) {
@@ -254,11 +256,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   callGetter(statusPath) {
     statusDirectory = Directory(statusPath);
     if (statusPath == statusPathStandard) {
-      ext = 'standard-';
+      versionExt = 'standard-';
     } else if (statusPath == statusPathGB) {
-      ext = 'gb-';
+      versionExt = 'gb-';
     } else {
-      ext = 'business-';
+      versionExt = 'business-';
     }
 
     if (!isContentLoading) {
@@ -289,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       backLayer: BackdropPanel(
         callContentGetter: callGetter,
       ),
-      frontTitle: Text("Sam's Status Saver"),
+      frontTitle: Text(appTitle),
       frontLayer: Scaffold(
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(kToolbarHeight),
@@ -336,7 +338,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       adSize: AdmobBannerSize(
                         width: MediaQuery.of(context).size.width.toInt(),
                         height: 90,
-                        name: 'CUSTOM_BANNER'),
+                        name: 'HOME_CUSTOM_BANNER'),
                     )
                   : Container()),
           ],

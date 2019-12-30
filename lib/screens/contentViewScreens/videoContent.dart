@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:sam_status_saver/screens/contentViewScreens/widgetActions.dart';
 import 'package:video_player/video_player.dart';
+import 'package:sam_status_saver/screens/contentViewScreens/widgetActions.dart';
 
 class VideoContentView extends StatefulWidget {
   final currentIndex;
@@ -114,6 +114,7 @@ class _VideoContentViewState extends State<VideoContentView>
   }
 
   bool nextLoading = false;
+
   void _goNext() async {
     if (isThereNext && !nextLoading) {
       nextLoading = true;
@@ -146,6 +147,7 @@ class _VideoContentViewState extends State<VideoContentView>
   }
 
   bool previousLoading = false;
+
   void _goPrevious() async {
     if (isTherePrev && !previousLoading) {
       previousLoading = true;
@@ -191,7 +193,7 @@ class _VideoContentViewState extends State<VideoContentView>
         _goNext();
       }
     }
-    if (_fabOpacity != 1.0) setState(() {});
+    if (_fabOpacity != 1.0) setState(() {}); //Set state when neccessary
   }
 
   Widget controlButtons(BuildContext context) {

@@ -1,14 +1,17 @@
 import 'dart:io';
-import 'package:esys_flutter_share/esys_flutter_share.dart';
-import 'package:flutter/material.dart';
 import 'package:path/path.dart';
-import 'package:sam_status_saver/assets/customColor.dart';
-import 'package:sam_status_saver/constants/paths.dart';
+import 'package:flutter/material.dart';
 import 'package:unicorndial/unicorndial.dart';
+import 'package:esys_flutter_share/esys_flutter_share.dart';
+
+import 'package:sam_status_saver/constants/paths.dart';
+import 'package:sam_status_saver/assets/customColor.dart';
+
 
 class AppActions {
   saveFile(String filePath, bool isImage) {
-    String fileName = new DateTime.now().toString();
+
+    String fileName = basenameWithoutExtension(filePath);
     if (isImage) {
       File(filePath).copy(appDirectoryImagePath + '/' + fileName + '.jpg');
     } else {

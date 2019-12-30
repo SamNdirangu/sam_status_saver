@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'package:sam_status_saver/assets/customColor.dart';
 import 'package:sam_status_saver/constants/paths.dart';
+import 'package:sam_status_saver/constants/strings.dart';
 import 'package:sam_status_saver/providers/providers.dart';
 import 'package:sam_status_saver/screens/homeScreen/home.dart';
 
@@ -110,7 +111,7 @@ class App extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Status Saver',
+      title: appTitle,
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         buttonColor: Colors.black54,

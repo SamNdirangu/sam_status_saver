@@ -27,17 +27,18 @@ class _ImageContentViewState extends State<ImageContentView>
   TabController tabController;
   List<Widget> imageTabs = List();
   bool hideFab = false; //Hide the fab button
-  double _fabOpacity = 0.0; // Control Opacity animation
+  double _fabOpacity = 1.0; // Control Opacity animation
 
   @override
   void initState() {
     super.initState();
     renderListTabs();
-    _togglehideFab();
     tabController = TabController(
-        vsync: this,
-        length: widget.imagePaths.length,
-        initialIndex: widget.currentIndex);
+      vsync: this,
+      length: widget.imagePaths.length,
+      initialIndex: widget.currentIndex
+    );
+
     tabController.addListener(listener);
   }
 
