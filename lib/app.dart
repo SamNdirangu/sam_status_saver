@@ -20,8 +20,8 @@ class App extends StatelessWidget {
       Provider.of<PermissionProvider>(context).setNewPermission();
     } else {
       Map<PermissionGroup, PermissionStatus> permissions =
-          await PermissionHandler()
-              .requestPermissions([PermissionGroup.storage]);
+          await PermissionHandler().requestPermissions(
+              [PermissionGroup.storage, PermissionGroup.locationWhenInUse]);
       if (permissions.values.first.value == 2) {
         Provider.of<PermissionProvider>(context).setNewPermission();
       }
@@ -29,7 +29,6 @@ class App extends StatelessWidget {
   }
 
   appInitializer(BuildContext context) async {
-
     bool isExist = Directory(appDirectoryPath).existsSync();
     if (isExist) {
       isExist = Directory(appDirectoryVideoPath).existsSync();
@@ -46,7 +45,6 @@ class App extends StatelessWidget {
       Directory(appDirectoryImagePath).createSync();
     }
     Provider.of<AppDirectoryState>(context).setDirectoryState();
-
 
     //=============================================================================
     final statusPaths = Provider.of<StatusDirectoryPath>(context);
@@ -70,24 +68,22 @@ class App extends StatelessWidget {
     if (statusPaths.statusPathsAvailable.isNotEmpty) {
       final path = await Provider.of<StatusDirectoryFavourite>(context)
           .getFavouritePath();
-      if (path=='') {
+      if (path == '') {
         Provider.of<StatusDirectoryFavourite>(context)
             .setFavouritePath(statusPaths.statusPathsAvailable[0]);
-
       } else {
         bool pathExist = false;
         for (var pathValue in statusPaths.statusPathsAvailable) {
-          if(pathValue == path){
+          if (pathValue == path) {
             pathExist = true;
           }
         }
-        if(!pathExist){
+        if (!pathExist) {
           Provider.of<StatusDirectoryFavourite>(context)
-            .setFavouritePath(statusPaths.statusPathsAvailable[0]);
-
+              .setFavouritePath(statusPaths.statusPathsAvailable[0]);
         }
       }
-      
+
       Provider.of<StatusDirectoryState>(context).setDirectoryState();
       Provider.of<RefreshControl>(context).setRefreshState(false);
     }
@@ -96,7 +92,6 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<DarkThemeState>(context);
-
     if (Provider.of<RefreshControl>(context).refresh) {
       if (!Provider.of<PermissionProvider>(context).readEnabled) {
         requestWritePermission(context);

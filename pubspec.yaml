@@ -11,7 +11,7 @@ description: Save and share your contacts statuses
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.7+1
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -22,10 +22,10 @@ dependencies:
   provider: ^3.2.0
   video_player: ^0.10.5
   unicorndial: ^1.1.5
-  esys_flutter_share: ^1.0.2
   permission_handler: ^4.0.0
-  url_launcher: ^5.2.5
+  url_launcher: ^5.4.1
   video_thumbnail: ^0.1.7
+  sams_flutter_share: ^0.0.2
   shared_preferences: ^0.5.6
   path_provider: ^1.5.1
   admob_flutter: ^0.3.4

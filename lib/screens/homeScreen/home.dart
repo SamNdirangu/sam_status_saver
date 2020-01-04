@@ -27,15 +27,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   TabController _tabController;
   AnimationController _animationController;
-  
+
+  Key imageTab = UniqueKey();
+  Key videoTab = UniqueKey();
+
   bool isReadEnabled = true;
 
   @override
   void initState() {
-    super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _animationController = AnimationController(
         duration: Duration(milliseconds: 300), value: 1.0, vsync: this);
+    super.initState();
   }
 
   @override
@@ -172,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         }
       }
       isContentLoading = false;
-      
+
       if (_changePresent) {
         _changePresent = false;
         setState(() {
@@ -190,6 +193,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       });
     }
   }
+
   //=======================Garbage Cleanup=======================================
   void cleanUpGarbage() async {
     bool _isDelete;
@@ -251,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
   //=======================Garbage Cleanup End=======================================
-  
+
   //=======================Call Getters=======================================
   callGetter(statusPath) {
     statusDirectory = Directory(statusPath);
@@ -275,6 +279,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    print('Home Built');
+
     if (widget.isReadEnabled && loadGetter) {
       final statusPath =
           Provider.of<StatusDirectoryFavourite>(context).statusPathsFavourite;
@@ -284,14 +290,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       }
       callGetter(statusPath);
     }
-
     return Backdrop(
       controller: _animationController,
-      backTitle: Text('More'),
+      backTitle: const Text('More'),
       backLayer: BackdropPanel(
         callContentGetter: callGetter,
       ),
-      frontTitle: Text(appTitle),
+      frontTitle: const Text(appTitle),
       frontLayer: Scaffold(
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(kToolbarHeight),
@@ -302,48 +307,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               indicatorWeight: 3,
               indicatorColor: Colors.white,
               tabs: <Widget>[
-                Tab(
+                const Tab(
                   text: 'Images',
                 ),
-                Tab(text: 'Videos')
+                const Tab(text: 'Videos')
               ],
             ),
           ),
         ),
         backgroundColor: Colors.black,
-        body: Stack(
+        body: TabBarView(
+          controller: _tabController,
           children: <Widget>[
-            TabBarView(
-              controller: _tabController,
-              children: <Widget>[
-                StatusImages(
-                  imagePaths: imagePaths,
-                  isScanningBegan: isScanningBegan,
-                  readEnabled: isReadEnabled,
-                  getContentCallBack: getContent,
-                ),
-                StatusVideos(
-                  videoPaths: videoPaths,
-                  thumbnailPaths: thumbnailPaths,
-                  isScanningBegan: isScanningBegan,
-                  readEnabled: isReadEnabled,
-                  getContentCallBack: getContent),
-              ],
+            StatusImages(
+              key: imageTab,
+              imagePaths: imagePaths,
+              isScanningBegan: isScanningBegan,
+              readEnabled: isReadEnabled,
+              getContentCallBack: getContent,
             ),
-            Align(
-                alignment: Alignment.bottomLeft,
-                child: !isContentLoading
-                  ? AdmobBanner(
-                      adUnitId: getBannerAdUnitId(),
-                      adSize: AdmobBannerSize(
-                        width: MediaQuery.of(context).size.width.toInt(),
-                        height: 90,
-                        name: 'HOME_CUSTOM_BANNER'),
-                    )
-                  : Container()),
+            StatusVideos(
+                key: videoTab,
+                videoPaths: videoPaths,
+                thumbnailPaths: thumbnailPaths,
+                isScanningBegan: isScanningBegan,
+                readEnabled: isReadEnabled,
+                getContentCallBack: getContent),
           ],
         ),
-      )
+        extendBody: true,
+        bottomNavigationBar: !isContentLoading
+            ? AdmobBanner(
+                adUnitId: getBannerAdUnitId(),
+                adSize: AdmobBannerSize(
+                    width: MediaQuery.of(context).size.width.toInt(),
+                    height: 90,
+                    name: 'CUSTOM_BANNER'),
+              )
+            : Container(),
+      ),
     );
   }
 }

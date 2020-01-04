@@ -2,15 +2,13 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:unicorndial/unicorndial.dart';
-import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:sams_flutter_share/sams_flutter_share.dart';
 
 import 'package:sam_status_saver/constants/paths.dart';
 import 'package:sam_status_saver/assets/customColor.dart';
 
-
 class AppActions {
   saveFile(String filePath, bool isImage) {
-
     String fileName = basenameWithoutExtension(filePath);
     if (isImage) {
       File(filePath).copy(appDirectoryImagePath + '/' + fileName + '.jpg');
@@ -27,12 +25,10 @@ class AppActions {
     if (!repost) repostTo = '';
     try {
       final fileBytes = File(filePath).readAsBytesSync();
-      await Share.shareFile(fileBytes, basename(filePath), memeType,
-        shareTitle: 'Share with',
-        appToShare: repostTo
-      );
+      await SamsFlutterShare.shareFile(fileBytes, basename(filePath), memeType,
+          shareTitle: 'Share with', appToShare: repostTo);
     } catch (e) {
-      //
+      print(e);
     }
   }
 }
@@ -60,7 +56,7 @@ class FunctionButtons extends StatelessWidget {
       hasBackground: false,
       hasNotch: false,
       parentButtonBackground: colorCustom,
-      parentButton: Icon(
+      parentButton: const Icon(
         Icons.add,
         color: Colors.white,
       ),
@@ -76,7 +72,7 @@ class FunctionButtons extends StatelessWidget {
             },
             tooltip: 'Save',
             mini: true,
-            child: Icon(
+            child: const Icon(
               Icons.save,
               color: Colors.white,
             ),
@@ -92,7 +88,7 @@ class FunctionButtons extends StatelessWidget {
             },
             tooltip: 'repost',
             mini: true,
-            child: Icon(
+            child: const Icon(
               Icons.reply,
               color: Colors.white,
             ),
@@ -108,7 +104,7 @@ class FunctionButtons extends StatelessWidget {
             },
             tooltip: 'Share',
             mini: true,
-            child: Icon(
+            child: const Icon(
               Icons.share,
               color: Colors.white,
             ),

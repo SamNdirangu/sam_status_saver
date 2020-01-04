@@ -130,7 +130,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
     }
 
     return Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             image: DecorationImage(
           fit: BoxFit.cover,
           image: AssetImage('lib/assets/images/BackdropPanel.jpg'),
@@ -163,7 +163,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
                                       color: Theme.of(context).primaryColor)),
                             ),
                           ),
-                          Align(
+                          const Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
@@ -180,8 +180,8 @@ class _BackdropPanelState extends State<BackdropPanel> {
                     ],
                   ),
                 ),
-                Divider(),
-                Align(
+                const Divider(),
+                const Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 16.0),
@@ -201,33 +201,37 @@ class _BackdropPanelState extends State<BackdropPanel> {
                           color:
                               favStandard ? colorCustom : Colors.grey.shade700,
                           textColor: Colors.white,
-                          child: Text('Standard'),
+                          child: const Text('Standard'),
                           onPressed: () => handleStandard(favPathProvider)),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       RaisedButton(
                         color: favGB ? colorCustom : Colors.grey.shade700,
                         textColor: Colors.white,
                         onPressed: () => handleGB(favPathProvider),
-                        child: Text('GB'),
+                        child: const Text('GB'),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       RaisedButton(
                         color: favBusiness ? colorCustom : Colors.grey.shade700,
                         textColor: Colors.white,
                         onPressed: () => handleBusiness(favPathProvider),
-                        child: Text('Buisness'),
+                        child: const Text('Buisness'),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 AnimatedOpacity(
-                  duration: Duration(milliseconds: 350),
+                  duration: const Duration(milliseconds: 350),
                   opacity: isMessageOpacity,
-                  child: Text(infoMessage,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green.shade800)),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(infoMessage,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2E7D32))),
+                  ),
                 ),
               ],
             ),
@@ -236,11 +240,25 @@ class _BackdropPanelState extends State<BackdropPanel> {
             padding: const EdgeInsets.only(left: 8.0, top: 20.0, right: 10.0),
             child: Text(hintMessage,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.black87, fontWeight: FontWeight.w600)),
           ),
-          SaleWidget(),
-          SizedBox(height: 200)
+          Padding(
+            padding: const EdgeInsets.only(
+                left: 8.0, top: 20.0, right: 10.0, bottom: 10),
+            child: GestureDetector(
+              onTap: () => launch(
+                  'https://samndirangu.github.io/apps/SamsStatusSaver/privacy-policy.html'),
+              child: const Text('Privacy Policy & Terms and Condition',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: Color(0xFF2E7D32),
+                      fontWeight: FontWeight.w600)),
+            ),
+          ),
+          const SaleWidget(),
+          const SizedBox(height: 200)
         ])));
   }
 }
@@ -261,12 +279,12 @@ class SaleWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
+              const Text(
                 'Made with ',
                 style: TextStyle(color: Colors.black87),
               ),
-              Icon(Icons.favorite, color: Colors.red),
-              Text(' by', style: TextStyle(color: Colors.black87))
+              const Icon(Icons.favorite, color: Colors.red),
+              const Text(' by', style: TextStyle(color: Colors.black87))
             ],
           ),
         ),
@@ -275,7 +293,8 @@ class SaleWidget extends StatelessWidget {
           height: 200,
         ),
         Padding(
-            padding: EdgeInsets.only(left: 10, right: 10, top: 15, bottom: 10),
+            padding:
+                const EdgeInsets.only(left: 10, right: 10, top: 15, bottom: 10),
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -285,39 +304,39 @@ class SaleWidget extends StatelessWidget {
                     textScaleFactor: 1.8,
                     style: TextStyle(color: Theme.of(context).primaryColor),
                   ),
-                  Text("$sale2",
+                  const Text("$sale2",
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.black87)),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   RaisedButton.icon(
                     elevation: 5,
                     autofocus: true,
                     textColor: Theme.of(context).primaryColor,
                     color: Colors.white,
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.call,
                       size: 22,
                     ),
-                    label: Text("+254 712 77 8056"),
+                    label: const Text("+254 712 77 8056"),
                     onPressed: () async {
                       await launch('tel:+254712778056');
                     },
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   RaisedButton.icon(
                     elevation: 5,
                     autofocus: true,
                     textColor: Theme.of(context).primaryColor,
                     color: Colors.white,
-                    icon: Icon(Icons.mail, size: 22),
-                    label: Text("sakadevsinc@gmail.com"),
+                    icon: const Icon(Icons.mail, size: 22),
+                    label: const Text("sakadevsinc@gmail.com"),
                     onPressed: () async {
                       await launch(
                           'mailto:sakadevsinc@gmail.com?subject=Hey there I need an App');
                     },
                   ),
-                  SizedBox(height: 20),
-                  Text('SakaDevs Inc © 2020  App made with Flutter',
+                  const SizedBox(height: 20),
+                  const Text('SakaDevs Inc © 2020  App made with Flutter',
                       style: TextStyle(color: Colors.black87))
                 ])),
       ],

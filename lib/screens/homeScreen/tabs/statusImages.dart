@@ -19,17 +19,20 @@ class StatusImages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('status Images Built');
     if (readEnabled) {
       if (!isScanningBegan) {
         return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              CircularProgressIndicator(),
-              SizedBox(
+              const CircularProgressIndicator(),
+              const SizedBox(
                 height: 30,
               ),
-              Text('Keep calm.\nGrabbing them pics',textAlign: TextAlign.center,
-                  textScaleFactor: 1.2, style: TextStyle(color: Colors.white)),
+              const Text('Keep calm.\nGrabbing them pics',
+                  textAlign: TextAlign.center,
+                  textScaleFactor: 1.2,
+                  style: TextStyle(color: Colors.white)),
             ]);
       }
       if (imagePaths.isEmpty) {
@@ -37,17 +40,17 @@ class StatusImages extends StatelessWidget {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(
+                const Icon(
                   Icons.sentiment_satisfied,
                   size: 56,
                   color: Colors.white,
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   'Hey it seems you dont have any status pictues yet.\n\n Once you view a few come back and see them here',
                   style: TextStyle(color: Colors.white),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 RaisedButton.icon(
                   icon: Icon(Icons.refresh, color: Colors.black87),
                   label: Text('Refresh'),
@@ -58,14 +61,24 @@ class StatusImages extends StatelessWidget {
               ]),
         );
       }
+       //Resize accordingly
+      int gridCount = 3;
+      final width = MediaQuery.of(context).size.width;
+      if(width > 548){
+        gridCount = 4;
+      } else if(width < 275) {
+        gridCount = 2;
+      }
+
       return RefreshIndicator(
           onRefresh: getContentCallBack,
           child: GridView.builder(
+            key: PageStorageKey(key),
             gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: gridCount),
             itemCount: imagePaths.length + 2,
             itemBuilder: (BuildContext context, int index) {
-              if(index >= imagePaths.length){
+              if (index >= imagePaths.length) {
                 return Container();
               }
               return Padding(
@@ -77,7 +90,6 @@ class StatusImages extends StatelessWidget {
                             imagePaths: imagePaths, currentIndex: index)));
                   },
                   child: Hero(
-                    
                     tag: imagePaths[index],
                     child: Image.file(
                       File(imagePaths[index]),

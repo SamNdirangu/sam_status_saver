@@ -15,22 +15,22 @@ class PermRequester extends StatelessWidget {
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(
+              const Icon(
                 Icons.sentiment_dissatisfied,
                 size: 56,
                 color: Colors.white,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 'Please enable Permissions to access storage',
                 style: TextStyle(color: Colors.white),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               RaisedButton(
                 onPressed: () {
                   App().requestWritePermission(context);
                 },
-                child: Text('Enable Permissions'),
+                child: const Text('Enable Permissions'),
               )
             ]),
       );
@@ -39,13 +39,13 @@ class PermRequester extends StatelessWidget {
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
+            const Icon(
               Icons.sentiment_satisfied,
               size: 56,
               color: Colors.white,
             ),
-            SizedBox(height: 30),
-            Padding(
+            const SizedBox(height: 30),
+            const Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40.0),
               child: Text(
                 'Hey it seems you might have not yet installed Whastapp on your phone\n\nThis app requires Whatsapp',

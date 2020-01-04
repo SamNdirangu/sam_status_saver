@@ -4,36 +4,36 @@ import 'package:sam_status_saver/screens/contentViewScreens/videoContent.dart';
 import 'package:sam_status_saver/widgets/permRequester.dart';
 
 class StatusVideos extends StatelessWidget {
-  
   final bool readEnabled;
   final bool isScanningBegan;
   final List<String> videoPaths;
   final List<String> thumbnailPaths;
   final ContentCallBack getContentCallBack;
-  
 
   const StatusVideos(
-      { Key key,
-        @required this.readEnabled,
-        @required this.isScanningBegan,
-        @required this.videoPaths,
-        @required this.thumbnailPaths,      
-        @required this.getContentCallBack
-      }) : super(key: key);
+      {Key key,
+      @required this.readEnabled,
+      @required this.isScanningBegan,
+      @required this.videoPaths,
+      @required this.thumbnailPaths,
+      @required this.getContentCallBack})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
     if (readEnabled) {
       if (!isScanningBegan) {
         return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              CircularProgressIndicator(),
-              SizedBox(
+              const CircularProgressIndicator(),
+              const SizedBox(
                 height: 30,
               ),
-              Text('Keep calm.\nGrabbing them videos',textAlign: TextAlign.center,
-                  textScaleFactor: 1.2, style: TextStyle(color: Colors.white)),
+              const Text('Keep calm.\nGrabbing them videos',
+                  textAlign: TextAlign.center,
+                  textScaleFactor: 1.2,
+                  style: TextStyle(color: Colors.white)),
             ]);
       }
       if (thumbnailPaths.isEmpty) {
@@ -41,19 +41,19 @@ class StatusVideos extends StatelessWidget {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(
+                const Icon(
                   Icons.sentiment_satisfied,
                   size: 56,
                   color: Colors.white,
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   'Hey it seems you dont have any status videos yet.\n\n Once you view a few come back and see them here',
                   style: TextStyle(color: Colors.white),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 RaisedButton.icon(
-                  icon: Icon(Icons.refresh,color: Colors.black87),
+                  icon: Icon(Icons.refresh, color: Colors.black87),
                   label: Text('Refresh'),
                   textColor: Colors.black87,
                   color: Colors.white,
@@ -62,15 +62,26 @@ class StatusVideos extends StatelessWidget {
               ]),
         );
       }
+
+      //Resize accordingly
+      int gridCount = 3;
+      final width = MediaQuery.of(context).size.width;
+      if(width > 548){
+        gridCount = 4;
+      } else if(width < 275) {
+        gridCount = 2;
+      }
+
       return RefreshIndicator(
           onRefresh: getContentCallBack,
           child: GridView.builder(
+            key: PageStorageKey(key),
             gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: gridCount),
             itemCount: thumbnailPaths.length + 2,
             itemBuilder: (BuildContext context, int index) {
-              if(index >= thumbnailPaths.length){
-                return Container(); 
+              if (index >= thumbnailPaths.length) {
+                return Container();
                 //Add an empty space to push content up to prevent overlapping with ad
               }
               return Padding(

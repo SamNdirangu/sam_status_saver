@@ -6,7 +6,6 @@ import 'package:sam_status_saver/providers/providers.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
   Admob.initialize(getAppId());
   runApp(Providers());
 }

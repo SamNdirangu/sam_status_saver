@@ -1,9 +1,9 @@
-import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:provider/provider.dart';
 import 'package:sam_status_saver/constants/strings.dart';
 import 'package:sam_status_saver/providers/providers.dart';
+import 'package:sams_flutter_share/sams_flutter_share.dart';
 
 const Cubic _kAccelerateCurve = Cubic(0.548, 0.0, 0.757, 0.464);
 const Cubic _kDecelerateCurve = Cubic(0.23, 0.94, 0.41, 1.0);
@@ -280,7 +280,7 @@ class _BackdropState extends State<Backdrop>
         IconButton(
           icon: const Icon(Icons.share),
           onPressed: () {
-            Share.shareText(share, 'text/*',shareTitle: 'Share App link via');
+            SamsFlutterShare.shareText(share, 'text/*',shareTitle: 'Share App link via');
           },
         ),
         IconButton(

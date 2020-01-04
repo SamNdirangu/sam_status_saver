@@ -206,7 +206,7 @@ class _VideoContentViewState extends State<VideoContentView>
       bottom: 0,
       child: AnimatedOpacity(
         opacity: 1.0 - _fabOpacity,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         child: IgnorePointer(
           ignoring: _fabOpacity == 1.0,
           child: Material(
@@ -215,11 +215,11 @@ class _VideoContentViewState extends State<VideoContentView>
               width: displayWidth,
               child: Column(
                 children: <Widget>[
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(
                         currrentPosition < 10
                             ? '0:0' + currrentPosition.toString()
@@ -249,10 +249,10 @@ class _VideoContentViewState extends State<VideoContentView>
                             : '0:' + videoLength.inSeconds.toString(),
                         style: TextStyle(color: Colors.white),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Container(
                     width: displayWidth * 0.8,
                     child: Row(
@@ -282,7 +282,7 @@ class _VideoContentViewState extends State<VideoContentView>
                       ],
                     ),
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -316,7 +316,7 @@ class _VideoContentViewState extends State<VideoContentView>
         ),
         floatingActionButton: AnimatedOpacity(
             opacity: _fabOpacity,
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             child: FunctionButtons(
               scaffoldKey: _scaffoldKey,
               snackBar: snackBar,

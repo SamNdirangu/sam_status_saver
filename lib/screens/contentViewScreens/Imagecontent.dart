@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sam_status_saver/screens/contentViewScreens/widgetActions.dart';
 
@@ -26,6 +24,7 @@ class _ImageContentViewState extends State<ImageContentView>
 
   TabController tabController;
   List<Widget> imageTabs = List();
+  String filePath = '';
   bool hideFab = false; //Hide the fab button
   double _fabOpacity = 1.0; // Control Opacity animation
 
@@ -38,7 +37,7 @@ class _ImageContentViewState extends State<ImageContentView>
       length: widget.imagePaths.length,
       initialIndex: widget.currentIndex
     );
-
+    filePath = widget.imagePaths[tabController.index];
     tabController.addListener(listener);
   }
 
@@ -74,11 +73,15 @@ class _ImageContentViewState extends State<ImageContentView>
   }
 
   listener() {
-    setState(() {});
+    setState(() {
+      filePath = widget.imagePaths[tabController.index];
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    print('imageContent Built');
+    
     return Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.black,
@@ -86,17 +89,16 @@ class _ImageContentViewState extends State<ImageContentView>
             tag: widget.imagePaths[tabController.index],
             child: TabBarView(
               controller: tabController,
-              children: imageTabs,
-              dragStartBehavior: DragStartBehavior.down,
+              children: imageTabs
             )),
         floatingActionButton: AnimatedOpacity(
             opacity: _fabOpacity,
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             child: FunctionButtons(
               scaffoldKey: _scaffoldKey,
               snackBar: snackBar,
               isImage: true,
-              filePath: widget.imagePaths[tabController.index],
+              filePath: filePath,
             )));
   }
 }
