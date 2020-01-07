@@ -28,7 +28,7 @@ class AppActions {
       await SamsFlutterShare.shareFile(fileBytes, basename(filePath), memeType,
           shareTitle: 'Share with', appToShare: repostTo);
     } catch (e) {
-      print(e);
+      //print(e);
     }
   }
 }

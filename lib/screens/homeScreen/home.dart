@@ -41,7 +41,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     if (state == AppLifecycleState.resumed) {
       //print('refreshed');
       if (!isContentLoading) {
-        print('lifecycle: content called');
+        //print('lifecycle: content called');
         getContent();
       }
     }
@@ -82,7 +82,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
 
   //Get out contnet
   Future<void> getContent() async {
-    print('content started');
+    //print('content started');
     if (statusDirectory != null) {
       if (statusDirectory.existsSync()) {
         isContentLoading = true; //Store our content loading status
@@ -161,7 +161,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
             });
           }
         }
-        print('content generated');
+        //print('content generated');
         setState(() {
           isScanningBegan = true;
           isContentLoading = false;
@@ -225,7 +225,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
         isScanningBegan = false;
       });
 
-      print('callGetter: content called');
+      //print('callGetter: content called');
       getContent();
     }
   }
@@ -306,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print('homePrinted');
+    //print('homePrinted');
     return Backdrop(
         controller: _animationController,
         backTitle: const Text('More'),
