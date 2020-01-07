@@ -19,7 +19,6 @@ class StatusImages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('status Images Built');
     if (readEnabled) {
       if (!isScanningBegan) {
         return Column(
@@ -61,26 +60,22 @@ class StatusImages extends StatelessWidget {
               ]),
         );
       }
-       //Resize accordingly
+      //Resize accordingly
       int gridCount = 3;
       final width = MediaQuery.of(context).size.width;
-      if(width > 548){
+      if (width > 548) {
         gridCount = 4;
-      } else if(width < 275) {
+      } else if (width < 275) {
         gridCount = 2;
       }
-
       return RefreshIndicator(
           onRefresh: getContentCallBack,
           child: GridView.builder(
             key: PageStorageKey(key),
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: gridCount),
-            itemCount: imagePaths.length + 2,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: gridCount),
+            itemCount: imagePaths.length,
             itemBuilder: (BuildContext context, int index) {
-              if (index >= imagePaths.length) {
-                return Container();
-              }
               return Padding(
                 padding: const EdgeInsets.all(1.0),
                 child: GestureDetector(
@@ -89,12 +84,9 @@ class StatusImages extends StatelessWidget {
                         builder: (context) => ImageContentView(
                             imagePaths: imagePaths, currentIndex: index)));
                   },
-                  child: Hero(
-                    tag: imagePaths[index],
-                    child: Image.file(
-                      File(imagePaths[index]),
-                      fit: BoxFit.cover,
-                    ),
+                  child: Image.file(
+                    File(imagePaths[index]),
+                    fit: BoxFit.cover,
                   ),
                 ),
               );

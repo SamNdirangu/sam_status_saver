@@ -33,10 +33,9 @@ class _ImageContentViewState extends State<ImageContentView>
     super.initState();
     renderListTabs();
     tabController = TabController(
-      vsync: this,
-      length: widget.imagePaths.length,
-      initialIndex: widget.currentIndex
-    );
+        vsync: this,
+        length: widget.imagePaths.length,
+        initialIndex: widget.currentIndex);
     filePath = widget.imagePaths[tabController.index];
     tabController.addListener(listener);
   }
@@ -80,17 +79,10 @@ class _ImageContentViewState extends State<ImageContentView>
 
   @override
   Widget build(BuildContext context) {
-    print('imageContent Built');
-    
     return Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.black,
-        body: Hero(
-            tag: widget.imagePaths[tabController.index],
-            child: TabBarView(
-              controller: tabController,
-              children: imageTabs
-            )),
+        body: TabBarView(controller: tabController, children: imageTabs),
         floatingActionButton: AnimatedOpacity(
             opacity: _fabOpacity,
             duration: const Duration(milliseconds: 300),

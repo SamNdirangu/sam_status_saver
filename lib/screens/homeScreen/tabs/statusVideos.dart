@@ -20,7 +20,7 @@ class StatusVideos extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) {
     if (readEnabled) {
       if (!isScanningBegan) {
         return Column(
@@ -66,9 +66,9 @@ class StatusVideos extends StatelessWidget {
       //Resize accordingly
       int gridCount = 3;
       final width = MediaQuery.of(context).size.width;
-      if(width > 548){
+      if (width > 548) {
         gridCount = 4;
-      } else if(width < 275) {
+      } else if (width < 275) {
         gridCount = 2;
       }
 
@@ -76,14 +76,10 @@ class StatusVideos extends StatelessWidget {
           onRefresh: getContentCallBack,
           child: GridView.builder(
             key: PageStorageKey(key),
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: gridCount),
-            itemCount: thumbnailPaths.length + 2,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: gridCount),
+            itemCount: thumbnailPaths.length,
             itemBuilder: (BuildContext context, int index) {
-              if (index >= thumbnailPaths.length) {
-                return Container();
-                //Add an empty space to push content up to prevent overlapping with ad
-              }
               return Padding(
                 padding: const EdgeInsets.all(1.0),
                 child: GestureDetector(
@@ -92,12 +88,9 @@ class StatusVideos extends StatelessWidget {
                         builder: (context) => VideoContentView(
                             videoPaths: videoPaths, currentIndex: index)));
                   },
-                  child: Hero(
-                    tag: index.toString(),
-                    child: Image.file(
-                      File(thumbnailPaths[index]),
-                      fit: BoxFit.cover,
-                    ),
+                  child: Image.file(
+                    File(thumbnailPaths[index]),
+                    fit: BoxFit.cover,
                   ),
                 ),
               );

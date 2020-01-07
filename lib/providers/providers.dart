@@ -111,7 +111,6 @@ class StatusDirectoryFavourite with ChangeNotifier {
   setFavouritePath(path) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('favPath', path);
-
     _statusPathFavourite = path;
     notifyListeners();
   }

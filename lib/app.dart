@@ -14,14 +14,19 @@ class App extends StatelessWidget {
   const App({Key key}) : super(key: key);
 
   requestWritePermission(context) async {
+    //Check permission status
     PermissionStatus permissionStatus = await PermissionHandler()
         .checkPermissionStatus(PermissionGroup.storage);
+
     if (permissionStatus.value == 2) {
+      //If permission present set provider
       Provider.of<PermissionProvider>(context).setNewPermission();
     } else {
+      //Request permmission
       Map<PermissionGroup, PermissionStatus> permissions =
-          await PermissionHandler().requestPermissions(
-              [PermissionGroup.storage, PermissionGroup.locationWhenInUse]);
+          await PermissionHandler()
+              .requestPermissions([PermissionGroup.storage]);
+
       if (permissions.values.first.value == 2) {
         Provider.of<PermissionProvider>(context).setNewPermission();
       }
@@ -51,13 +56,7 @@ class App extends StatelessWidget {
     //Check which status folder exists
     isExist = Directory(statusPathStandard).existsSync();
     if (isExist) {
-      //print('found it');
       statusPaths.addStatusPath(statusPathStandard);
-    }
-
-    isExist = Directory(statusPathGB).existsSync();
-    if (isExist) {
-      statusPaths.addStatusPath(statusPathGB);
     }
 
     isExist = Directory(statusPathBusiness).existsSync();
@@ -91,11 +90,16 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //Get theme
     final themeProvider = Provider.of<DarkThemeState>(context);
+
+    //Do we refresh
     if (Provider.of<RefreshControl>(context).refresh) {
       if (!Provider.of<PermissionProvider>(context).readEnabled) {
+        //If we dont have permission to read get permissions
         requestWritePermission(context);
       } else if (Provider.of<PermissionProvider>(context).readEnabled) {
+        //if we have them initialize app.
         appInitializer(context);
       }
     }

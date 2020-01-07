@@ -11,9 +11,7 @@ import 'package:sam_status_saver/constants/strings.dart';
 import 'package:sam_status_saver/providers/providers.dart';
 
 class BackdropPanel extends StatefulWidget {
-  final CallerContentCallBack callContentGetter;
-
-  BackdropPanel({Key key, @required this.callContentGetter}) : super(key: key);
+  BackdropPanel({Key key}) : super(key: key);
 
   @override
   _BackdropPanelState createState() => _BackdropPanelState();
@@ -46,24 +44,9 @@ class _BackdropPanelState extends State<BackdropPanel> {
         favStandard = true;
         favBusiness = false;
       });
-      widget.callContentGetter(statusPathStandard);
       favPathProvider.setFavouritePath(statusPathStandard);
     } else {
       showErrorMessage(1);
-    }
-  }
-
-  handleGB(favPathProvider) {
-    if (Directory(statusPathGB).existsSync()) {
-      setState(() {
-        favGB = true;
-        favStandard = false;
-        favBusiness = false;
-      });
-      widget.callContentGetter(statusPathGB);
-      favPathProvider.setFavouritePath(statusPathGB);
-    } else {
-      showErrorMessage(2);
     }
   }
 
@@ -74,7 +57,6 @@ class _BackdropPanelState extends State<BackdropPanel> {
         favStandard = false;
         favBusiness = true;
       });
-      widget.callContentGetter(statusPathBusiness);
       favPathProvider.setFavouritePath(statusPathBusiness);
     } else {
       showErrorMessage(3);
@@ -92,12 +74,6 @@ class _BackdropPanelState extends State<BackdropPanel> {
             "Sorry but you dont have the standard WhatsApp version installed";
         isMessageOpacity = 1.0 - isMessageOpacity;
       });
-    } else if (code == 2) {
-      setState(() {
-        infoMessage =
-            "Sorry but you dont have the WhatsApp GB version installed";
-        isMessageOpacity = 1.0 - isMessageOpacity;
-      });
     } else {
       setState(() {
         infoMessage =
@@ -106,7 +82,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
       });
     }
 
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(milliseconds: 1500), () {
       setState(() {
         isMessageOpacity = 1.0 - isMessageOpacity;
       });
@@ -121,8 +97,6 @@ class _BackdropPanelState extends State<BackdropPanel> {
         initialise = false;
         if (favPathProvider.statusPathsFavourite == statusPathStandard) {
           favStandard = true;
-        } else if (favPathProvider.statusPathsFavourite == statusPathGB) {
-          favGB = true;
         } else {
           favBusiness = true;
         }
@@ -203,13 +177,6 @@ class _BackdropPanelState extends State<BackdropPanel> {
                           textColor: Colors.white,
                           child: const Text('Standard'),
                           onPressed: () => handleStandard(favPathProvider)),
-                      const SizedBox(width: 20),
-                      RaisedButton(
-                        color: favGB ? colorCustom : Colors.grey.shade700,
-                        textColor: Colors.white,
-                        onPressed: () => handleGB(favPathProvider),
-                        child: const Text('GB'),
-                      ),
                       const SizedBox(width: 20),
                       RaisedButton(
                         color: favBusiness ? colorCustom : Colors.grey.shade700,
