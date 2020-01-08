@@ -31,6 +31,9 @@ class _VideoContentViewState extends State<VideoContentView>
   bool isThereNext = true;
   bool isTherePrev = true;
 
+  bool nextLoading = false;
+  bool previousLoading = false;
+
   int currentIndex;
   int currentController = 0;
   List<String> videoPaths;
@@ -49,9 +52,11 @@ class _VideoContentViewState extends State<VideoContentView>
 
   @override
   void dispose() {
-    if (currentController >= 1) {
+    if (currentController > 0) {
+      //print('Controller ' + (currentController - 1).toString() + ': Disposed');
       _videoPlayerController[currentController - 1].dispose();
     }
+    //print('Controller ' + (currentController).toString() + ': Disposed');
     _videoPlayerController[currentController].dispose();
     super.dispose();
   }
@@ -64,6 +69,7 @@ class _VideoContentViewState extends State<VideoContentView>
 
   void _loadVideo() async {
     _checkOtherVideos();
+    //print('Controller ' + (currentController).toString() + ': Added');
     _videoPlayerController
         .add(VideoPlayerController.file(File(videoPaths[currentIndex])));
     await _videoPlayerController[currentController].initialize();
@@ -78,9 +84,8 @@ class _VideoContentViewState extends State<VideoContentView>
   }
 
   void _checkOtherVideos() {
-     //print('object');
-      //print(currentIndex.toString());
-      //print(videoPaths.length);
+    //print(currentIndex.toString());
+    //print(videoPaths.length);
     if (currentIndex == 0) {
       setState(() {
         isTherePrev = false;
@@ -113,69 +118,77 @@ class _VideoContentViewState extends State<VideoContentView>
     });
   }
 
-  bool nextLoading = false;
-
   void _goNext() async {
     if (isThereNext && !nextLoading) {
       nextLoading = true;
 
-      _videoPlayerController
-          .add(VideoPlayerController.file(File(videoPaths[currentIndex + 1])));
-      await _videoPlayerController[currentController + 1].initialize();
+      if (File(videoPaths[currentIndex + 1]).existsSync()) {
+        //print('Controller ' + (currentController + 1).toString() + ': Added');
+        _videoPlayerController.add(
+            VideoPlayerController.file(File(videoPaths[currentIndex + 1])));
+        await _videoPlayerController[currentController + 1].initialize();
 
-      setState((){
-        aspectRatio =
-            _videoPlayerController[currentController + 1].value.aspectRatio;
-        videoLength =
-            _videoPlayerController[currentController + 1].value.duration;
-        currentIndex++;
-        currentController++;
-        _videoPlayerController[currentController]
-          ..play()
-          ..addListener(listener);
-        videoPlay = true;
-      });
+        setState(() {
+          aspectRatio =
+              _videoPlayerController[currentController + 1].value.aspectRatio;
+          videoLength =
+              _videoPlayerController[currentController + 1].value.duration;
+          currentIndex++;
+          currentController++;
+          _videoPlayerController[currentController]
+            ..play()
+            ..addListener(listener);
+          videoPlay = true;
+        });
 
-      await _videoPlayerController[currentController - 1].pause();
-      _videoPlayerController[currentController - 1].removeListener(listener);
-      if (currentController > 1) {
-        _videoPlayerController[currentController - 2].dispose();
+        await _videoPlayerController[currentController - 1].pause();
+        _videoPlayerController[currentController - 1].removeListener(listener);
+        if (currentController > 1) {
+          //print('Controller ' + (currentController - 2).toString() + ': Disposed');
+          _videoPlayerController[currentController - 2].dispose();
+        }
+        _checkOtherVideos();
+        nextLoading = false;
+      } else {
+        Navigator.of(context).pop();
       }
-      _checkOtherVideos();
-      nextLoading = false;
     }
   }
-
-  bool previousLoading = false;
 
   void _goPrevious() async {
     if (isTherePrev && !previousLoading) {
       previousLoading = true;
 
-      _videoPlayerController
-          .add(VideoPlayerController.file(File(videoPaths[currentIndex - 1])));
-      await _videoPlayerController[currentController + 1].initialize();
+      if (File(videoPaths[currentIndex - 1]).existsSync()) {
+        //print('Controller ' + (currentController + 1).toString() + ': Added');
+        _videoPlayerController.add(
+            VideoPlayerController.file(File(videoPaths[currentIndex - 1])));
+        await _videoPlayerController[currentController + 1].initialize();
 
-      setState(() {
-        aspectRatio =
-            _videoPlayerController[currentController + 1].value.aspectRatio;
-        videoLength =
-            _videoPlayerController[currentController + 1].value.duration;
-        currentIndex--;
-        currentController++;
-        _videoPlayerController[currentController]
-          ..play()
-          ..addListener(listener);
-        videoPlay = true;
-      });
+        setState(() {
+          aspectRatio =
+              _videoPlayerController[currentController + 1].value.aspectRatio;
+          videoLength =
+              _videoPlayerController[currentController + 1].value.duration;
+          currentIndex--;
+          currentController++;
+          _videoPlayerController[currentController]
+            ..play()
+            ..addListener(listener);
+          videoPlay = true;
+        });
 
-      await _videoPlayerController[currentController - 1].pause();
-      _videoPlayerController[currentController - 1].removeListener(listener);
-      if (currentController > 1) {
-        _videoPlayerController[currentController - 2].dispose();
+        await _videoPlayerController[currentController - 1].pause();
+        _videoPlayerController[currentController - 1].removeListener(listener);
+        if (currentController > 1) {
+          //print('Controller ' + (currentController - 2).toString() + ': Disposed');
+          _videoPlayerController[currentController - 2].dispose();
+        }
+        _checkOtherVideos();
+        previousLoading = false;
+      } else {
+        Navigator.of(context).pop();
       }
-      _checkOtherVideos();
-      previousLoading = false;
     }
   }
 
@@ -190,7 +203,11 @@ class _VideoContentViewState extends State<VideoContentView>
     if (_videoPlayerController[currentController].value.position ==
         videoLength) {
       if (videoPlay) {
-        _goNext();
+        if (isThereNext) {
+          _goNext();
+        } else {
+          Navigator.of(context).pop();
+        }
       }
     }
     if (_fabOpacity != 1.0) setState(() {}); //Set state when neccessary

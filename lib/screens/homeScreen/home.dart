@@ -128,7 +128,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
           //Check if file is a video
           if (_fileNameExt.contains('.mp4')) {
             final _thumbnailTempPath =
-                appDirectoryTempPath + '/' + _fileName + '.png';
+                appDirectoryTempPath + '/' + _fileName + '.webp';
             //Check if video thumbnail exists in temp directory
             _inTemp = false;
             for (var tempFile in statusTempFiles) {
@@ -144,8 +144,8 @@ class _HomeScreenContentState extends State<HomeScreenContent>
               await VideoThumbnail.thumbnailFile(
                 video: file.path,
                 thumbnailPath: _thumbnailTempPath,
-                imageFormat: ImageFormat.PNG,
-                quality: 10,
+                imageFormat: ImageFormat.WEBP,
+                quality: 3,
               );
               _refreshCount++;
             }
@@ -234,19 +234,19 @@ class _HomeScreenContentState extends State<HomeScreenContent>
   @override
   Widget build(BuildContext context) {
     isReadEnabled = widget.isReadEnabled;
-    
+
     if (widget.isReadEnabled) {
       final statusPath =
           Provider.of<StatusDirectoryFavourite>(context).statusPathsFavourite;
 
-      if(loadGetter){
+      if (loadGetter) {
         if (Directory(statusPath).existsSync()) {
           loadGetter = false;
           //print('caller triggered');
           callGetter(statusPath);
         }
-      } 
-      
+      }
+
       if (statusPath != statusDirectory.path) {
         if (Directory(statusPath).existsSync()) {
           //print('caller triggered');
