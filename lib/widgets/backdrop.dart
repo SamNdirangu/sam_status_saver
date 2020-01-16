@@ -279,11 +279,13 @@ class _BackdropState extends State<Backdrop>
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.share),
+          tooltip: "Share App",
           onPressed: () {
-            SamsFlutterShare.shareText(share, 'text/*',shareTitle: 'Share App link via');
+            SamsFlutterShare.shareText(share, 'text/plain',shareTitle: 'Share App link via');
           },
         ),
         IconButton(
+          tooltip: "Dark Theme",
           icon: themeProvider.darkThemeState
               ? Icon(Icons.brightness_7)
               : Icon(Icons.brightness_3),

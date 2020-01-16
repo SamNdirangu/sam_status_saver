@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:gesture_zoom_box/gesture_zoom_box.dart';
 import 'package:sam_status_saver/screens/contentViewScreens/widgetActions.dart';
 
 class ImageContentView extends StatefulWidget {
@@ -65,10 +66,9 @@ class _ImageContentViewState extends State<ImageContentView>
 
   Widget renderImageTab(path) {
     return GestureDetector(
-        onTap: _togglehideFab,
-        child: Center(
-          child: Image.file(File(path)),
-        ));
+      onTap: _togglehideFab,
+      child: Center(child: GestureZoomBox(child: Image.file(File(path)))),
+    );
   }
 
   listener() {

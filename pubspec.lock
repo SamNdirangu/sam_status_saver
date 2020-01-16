@@ -72,6 +72,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  gesture_zoom_box:
+    dependency: "direct main"
+    description:
+      name: gesture_zoom_box
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   image:
     dependency: transitive
     description:
@@ -245,13 +252,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.6"
-  unicorndial:
-    dependency: "direct main"
-    description:
-      name: unicorndial
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.5"
   url_launcher:
     dependency: "direct main"
     description:

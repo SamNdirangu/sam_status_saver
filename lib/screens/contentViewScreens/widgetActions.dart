@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
-import 'package:unicorndial/unicorndial.dart';
+import 'package:sam_status_saver/widgets/unicorndial.dart';
 import 'package:sams_flutter_share/sams_flutter_share.dart';
 
 import 'package:sam_status_saver/constants/paths.dart';

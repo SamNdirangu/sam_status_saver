@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sam_status_saver/screens/contentViewScreens/Imagecontent.dart';
+import 'package:sam_status_saver/widgets/pageTransition.dart';
 import 'package:sam_status_saver/widgets/permRequester.dart';
 
 class StatusImages extends StatelessWidget {
@@ -80,8 +81,7 @@ class StatusImages extends StatelessWidget {
                 padding: const EdgeInsets.all(1.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ImageContentView(
+                    Navigator.of(context).push(pageRouter(ImageContentView(
                             imagePaths: imagePaths, currentIndex: index)));
                   },
                   child: Image.file(

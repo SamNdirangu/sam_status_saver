@@ -314,22 +314,19 @@ class _VideoContentViewState extends State<VideoContentView>
     return Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.black,
-        body: Hero(
-          tag: currentIndex.toString(),
-          child: Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              GestureDetector(
-                  onTap: _toggleFullScreen,
-                  child: Center(
-                    child: AspectRatio(
-                        aspectRatio: aspectRatio,
-                        child: VideoPlayer(
-                            _videoPlayerController[currentController])),
-                  )),
-              controlButtons(context),
-            ],
-          ),
+        body: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            GestureDetector(
+                onTap: _toggleFullScreen,
+                child: Center(
+                  child: AspectRatio(
+                      aspectRatio: aspectRatio,
+                      child: VideoPlayer(
+                          _videoPlayerController[currentController])),
+                )),
+            controlButtons(context),
+          ],
         ),
         floatingActionButton: AnimatedOpacity(
             opacity: _fabOpacity,

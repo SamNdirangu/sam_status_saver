@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sam_status_saver/screens/contentViewScreens/videoContent.dart';
+import 'package:sam_status_saver/widgets/pageTransition.dart';
 import 'package:sam_status_saver/widgets/permRequester.dart';
 
 class StatusVideos extends StatelessWidget {
@@ -84,8 +85,7 @@ class StatusVideos extends StatelessWidget {
                 padding: const EdgeInsets.all(1.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => VideoContentView(
+                    Navigator.of(context).push(pageRouter(VideoContentView(
                             videoPaths: videoPaths, currentIndex: index)));
                   },
                   child: Image.file(
