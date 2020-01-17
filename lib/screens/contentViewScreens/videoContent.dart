@@ -192,9 +192,9 @@ class _VideoContentViewState extends State<VideoContentView>
     }
   }
 
-  void seekTo(double e) {
+  void seekTo(double value) {
     if (!previousLoading && !nextLoading) {
-      final position = Duration(seconds: e.toInt());
+      final position = Duration(seconds: value.toInt());
       _videoPlayerController[currentController].seekTo(position);
     }
   }

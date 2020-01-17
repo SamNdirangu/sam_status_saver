@@ -183,7 +183,7 @@ class _BackdropPanelState extends State<BackdropPanel> {
                         color: favBusiness ? colorCustom : Colors.grey.shade700,
                         textColor: Colors.white,
                         onPressed: () => handleBusiness(favPathProvider),
-                        child: const Text('Buisness'),
+                        child: const Text('Business'),
                       ),
                     ],
                   ),

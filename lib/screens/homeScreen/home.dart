@@ -35,6 +35,9 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     WidgetsBinding.instance.addObserver(this);
   }
 
+  ///The function is called whrn the app lifestyle changes
+  ///This allows for the calling of get content if one returns to the app
+  ///automatically refreshing the content displayed
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     //print('called');
@@ -152,6 +155,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
             videoPaths.add(file.path);
             thumbnailPaths.add(_thumbnailTempPath);
           }
+          //Refresh so as not to keep user waiting
           if (_refreshCount > 1) {
             _refreshCount = 0;
             setState(() {
@@ -224,17 +228,15 @@ class _HomeScreenContentState extends State<HomeScreenContent>
       setState(() {
         isScanningBegan = false;
       });
-
       //print('callGetter: content called');
       getContent();
     }
   }
-
   //=======================Call Getters=======================================
+
   @override
   Widget build(BuildContext context) {
     isReadEnabled = widget.isReadEnabled;
-
     if (widget.isReadEnabled) {
       final statusPath =
           Provider.of<StatusDirectoryFavourite>(context).statusPathsFavourite;

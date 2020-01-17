@@ -7,7 +7,7 @@ import 'package:sams_flutter_share/sams_flutter_share.dart';
 import 'package:sam_status_saver/constants/paths.dart';
 import 'package:sam_status_saver/assets/customColor.dart';
 
-class AppActions {
+class ShareActions {
   saveFile(String filePath, bool isImage) {
     String fileName = basenameWithoutExtension(filePath);
     if (isImage) {
@@ -67,7 +67,7 @@ class FunctionButtons extends StatelessWidget {
             backgroundColor: colorCustom,
             heroTag: 'saveFab',
             onPressed: () {
-              AppActions().saveFile(filePath, isImage);
+              ShareActions().saveFile(filePath, isImage);
               _scaffoldKey.currentState.showSnackBar(snackBar);
             },
             tooltip: 'Save',
@@ -84,7 +84,7 @@ class FunctionButtons extends StatelessWidget {
             backgroundColor: colorCustom,
             heroTag: 'repostFab',
             onPressed: () {
-              AppActions().shareFile(filePath, true, isImage);
+              ShareActions().shareFile(filePath, true, isImage);
             },
             tooltip: 'repost',
             mini: true,
@@ -100,7 +100,7 @@ class FunctionButtons extends StatelessWidget {
             backgroundColor: colorCustom,
             heroTag: 'shareFab',
             onPressed: () {
-              AppActions().shareFile(filePath, false, isImage);
+              ShareActions().shareFile(filePath, false, isImage);
             },
             tooltip: 'Share',
             mini: true,

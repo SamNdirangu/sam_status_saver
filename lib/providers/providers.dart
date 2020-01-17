@@ -51,7 +51,7 @@ class DarkThemeState with ChangeNotifier {
   }
 }
 
-//Dark theme Provider
+///Permission Provider
 class PermissionProvider with ChangeNotifier {
   bool _readEnable = false;
   get readEnabled => _readEnable;
@@ -62,18 +62,16 @@ class PermissionProvider with ChangeNotifier {
   }
 }
 
-//Dark theme Provider
+//App directory Provider
 class AppDirectoryState with ChangeNotifier {
   bool _directoryExists = false;
   get directoryExists => _directoryExists;
 
   void setDirectoryState() {
     _directoryExists = true;
-    //notifyListeners();
   }
 }
-
-//Dark theme Provider
+///Do we have a status directory
 class StatusDirectoryState with ChangeNotifier {
   bool _directoryExists = false;
   get directoryExists => _directoryExists;
