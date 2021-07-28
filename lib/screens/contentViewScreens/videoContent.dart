@@ -1,22 +1,19 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:sam_status_saver/screens/contentViewScreens/widgetActions.dart';
+import 'package:sam_status_saver/widgets/widgetActions.dart';
+import 'package:sam_status_saver/providers/dataProvider.dart';
 
 class VideoContentView extends StatefulWidget {
   final currentIndex;
-  final List<String> videoPaths;
-  const VideoContentView(
-      {Key key, @required this.currentIndex, this.videoPaths})
-      : super(key: key);
+  final List<VideoFile> videoFiles;
+  const VideoContentView({Key? key, required this.currentIndex, required this.videoFiles}) : super(key: key);
 
   @override
   _VideoContentViewState createState() => _VideoContentViewState();
 }
 
-class _VideoContentViewState extends State<VideoContentView>
-    with SingleTickerProviderStateMixin {
+class _VideoContentViewState extends State<VideoContentView> with SingleTickerProviderStateMixin {
   //
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final snackBar = SnackBar(
@@ -24,7 +21,7 @@ class _VideoContentViewState extends State<VideoContentView>
     duration: Duration(seconds: 1),
   );
 
-  List<VideoPlayerController> _videoPlayerController = List();
+  late List<VideoPlayerController> _videoPlayerController = [];
   double _fabOpacity = 0.0; // Control Opacity animation
 
   bool videoPlay = true;
@@ -34,9 +31,9 @@ class _VideoContentViewState extends State<VideoContentView>
   bool nextLoading = false;
   bool previousLoading = false;
 
-  int currentIndex;
+  int currentIndex = 0;
   int currentController = 0;
-  List<String> videoPaths;
+  List<VideoFile> videoFiles = [];
 
   double aspectRatio = 1.0;
   int currrentPosition = 0;
@@ -46,17 +43,15 @@ class _VideoContentViewState extends State<VideoContentView>
   void initState() {
     super.initState();
     currentIndex = widget.currentIndex;
-    videoPaths = widget.videoPaths;
+    videoFiles = widget.videoFiles;
     _loadVideo();
   }
 
   @override
   void dispose() {
     if (currentController > 0) {
-      //print('Controller ' + (currentController - 1).toString() + ': Disposed');
       _videoPlayerController[currentController - 1].dispose();
     }
-    //print('Controller ' + (currentController).toString() + ': Disposed');
     _videoPlayerController[currentController].dispose();
     super.dispose();
   }
@@ -70,8 +65,7 @@ class _VideoContentViewState extends State<VideoContentView>
   void _loadVideo() async {
     _checkOtherVideos();
     //print('Controller ' + (currentController).toString() + ': Added');
-    _videoPlayerController
-        .add(VideoPlayerController.file(File(videoPaths[currentIndex])));
+    _videoPlayerController.add(VideoPlayerController.file(File(videoFiles[currentIndex].videoPath)));
     await _videoPlayerController[currentController].initialize();
 
     setState(() {
@@ -93,7 +87,7 @@ class _VideoContentViewState extends State<VideoContentView>
     } else if (!isTherePrev) {
       isTherePrev = true;
     }
-    if (currentIndex == (videoPaths.length - 1)) {
+    if (currentIndex == (videoFiles.length - 1)) {
       //print('object');
       //print(currentIndex.toString());
       //print(videoPaths.length);
@@ -122,17 +116,14 @@ class _VideoContentViewState extends State<VideoContentView>
     if (isThereNext && !nextLoading) {
       nextLoading = true;
 
-      if (File(videoPaths[currentIndex + 1]).existsSync()) {
+      if (File(videoFiles[currentIndex + 1].videoPath).existsSync()) {
         //print('Controller ' + (currentController + 1).toString() + ': Added');
-        _videoPlayerController.add(
-            VideoPlayerController.file(File(videoPaths[currentIndex + 1])));
+        _videoPlayerController.add(VideoPlayerController.file(File(videoFiles[currentIndex + 1].videoPath)));
         await _videoPlayerController[currentController + 1].initialize();
 
         setState(() {
-          aspectRatio =
-              _videoPlayerController[currentController + 1].value.aspectRatio;
-          videoLength =
-              _videoPlayerController[currentController + 1].value.duration;
+          aspectRatio = _videoPlayerController[currentController + 1].value.aspectRatio;
+          videoLength = _videoPlayerController[currentController + 1].value.duration;
           currentIndex++;
           currentController++;
           _videoPlayerController[currentController]
@@ -159,17 +150,14 @@ class _VideoContentViewState extends State<VideoContentView>
     if (isTherePrev && !previousLoading) {
       previousLoading = true;
 
-      if (File(videoPaths[currentIndex - 1]).existsSync()) {
+      if (File(videoFiles[currentIndex - 1].videoPath).existsSync()) {
         //print('Controller ' + (currentController + 1).toString() + ': Added');
-        _videoPlayerController.add(
-            VideoPlayerController.file(File(videoPaths[currentIndex - 1])));
+        _videoPlayerController.add(VideoPlayerController.file(File(videoFiles[currentIndex - 1].videoPath)));
         await _videoPlayerController[currentController + 1].initialize();
 
         setState(() {
-          aspectRatio =
-              _videoPlayerController[currentController + 1].value.aspectRatio;
-          videoLength =
-              _videoPlayerController[currentController + 1].value.duration;
+          aspectRatio = _videoPlayerController[currentController + 1].value.aspectRatio;
+          videoLength = _videoPlayerController[currentController + 1].value.duration;
           currentIndex--;
           currentController++;
           _videoPlayerController[currentController]
@@ -200,13 +188,12 @@ class _VideoContentViewState extends State<VideoContentView>
   }
 
   void listener() {
-    if (_videoPlayerController[currentController].value.position ==
-        videoLength) {
+    if (_videoPlayerController[currentController].value.position == videoLength) {
       if (videoPlay) {
         if (isThereNext) {
           _goNext();
         } else {
-          Navigator.of(context).pop();
+          _playPause();
         }
       }
     }
@@ -214,10 +201,8 @@ class _VideoContentViewState extends State<VideoContentView>
   }
 
   Widget controlButtons(BuildContext context) {
-    if (_videoPlayerController[currentController].value != null) {
-      currrentPosition =
-          _videoPlayerController[currentController].value.position.inSeconds;
-    }
+    currrentPosition = _videoPlayerController[currentController].value.position.inSeconds;
+
     final displayWidth = MediaQuery.of(context).size.width;
     return Positioned(
       bottom: 0,
@@ -232,11 +217,10 @@ class _VideoContentViewState extends State<VideoContentView>
               width: displayWidth,
               child: Column(
                 children: <Widget>[
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      const SizedBox(width: 10),
                       Text(
                         currrentPosition < 10
                             ? '0:0' + currrentPosition.toString()
@@ -247,15 +231,14 @@ class _VideoContentViewState extends State<VideoContentView>
                         width: displayWidth * 0.8,
                         child: SliderTheme(
                           data: SliderThemeData(
-                            trackHeight: 10.0,
-                            thumbShape: SliderComponentShape.noThumb,
+                            trackHeight: 5.0,
                           ),
                           child: Slider(
                             min: 0.0,
                             value: currrentPosition.toDouble(),
                             max: videoLength.inSeconds.toDouble(),
                             onChanged: (e) => seekTo(e),
-                            activeColor: Colors.white,
+                            activeColor: Theme.of(context).primaryColor,
                             inactiveColor: Colors.white38,
                           ),
                         ),
@@ -266,7 +249,6 @@ class _VideoContentViewState extends State<VideoContentView>
                             : '0:' + videoLength.inSeconds.toString(),
                         style: TextStyle(color: Colors.white),
                       ),
-                      const SizedBox(width: 10),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -277,29 +259,23 @@ class _VideoContentViewState extends State<VideoContentView>
                       children: <Widget>[
                         IconButton(
                           iconSize: 42,
-                          icon: Icon(Icons.skip_previous,
-                              color:
-                                  isTherePrev ? Colors.white : Colors.white38),
+                          icon: Icon(Icons.skip_previous, color: isTherePrev ? Colors.white : Colors.white38),
                           onPressed: _goPrevious,
                         ),
                         IconButton(
                           iconSize: 42,
-                          icon: Icon(
-                              !videoPlay ? Icons.play_arrow : Icons.pause,
-                              color: Colors.white),
+                          icon: Icon(!videoPlay ? Icons.play_arrow : Icons.pause, color: Colors.white),
                           onPressed: _playPause,
                         ),
                         IconButton(
                           iconSize: 42,
-                          icon: Icon(Icons.skip_next,
-                              color:
-                                  isThereNext ? Colors.white : Colors.white38),
+                          icon: Icon(Icons.skip_next, color: isThereNext ? Colors.white : Colors.white38),
                           onPressed: _goNext,
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -321,9 +297,7 @@ class _VideoContentViewState extends State<VideoContentView>
                 onTap: _toggleFullScreen,
                 child: Center(
                   child: AspectRatio(
-                      aspectRatio: aspectRatio,
-                      child: VideoPlayer(
-                          _videoPlayerController[currentController])),
+                      aspectRatio: aspectRatio, child: VideoPlayer(_videoPlayerController[currentController])),
                 )),
             controlButtons(context),
           ],
@@ -332,10 +306,9 @@ class _VideoContentViewState extends State<VideoContentView>
             opacity: _fabOpacity,
             duration: const Duration(milliseconds: 300),
             child: FunctionButtons(
-              scaffoldKey: _scaffoldKey,
               snackBar: snackBar,
               isImage: false,
-              filePath: videoPaths[currentIndex],
+              filePath: videoFiles[currentIndex].videoPath,
             )));
   }
 }

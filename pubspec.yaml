@@ -1,5 +1,9 @@
 name: sam_status_saver
-description: Save and share your contacts statuses
+description: A new Flutter application.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -11,32 +15,30 @@ description: Save and share your contacts statuses
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.8+3
+version: 1.0.9+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^3.2.0
-  video_player: ^0.10.5
-  permission_handler: ^4.0.0
-  url_launcher: ^5.4.1
-  video_thumbnail: ^0.1.7
-  sams_flutter_share: ^0.0.2
-  shared_preferences: ^0.5.6
-  path_provider: ^1.5.1
-  gesture_zoom_box: ^0.0.2
+
 
   # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  # cupertino_icons: ^0.1.2
+  provider: ^5.0.0
+  permission_handler: ^8.1.4+2
+  device_info: ^2.0.2
+  video_thumbnail: ^0.3.3
+  share: ^2.0.4
+  video_player: ^2.1.12
+  url_launcher: ^6.0.9
+  speed_dial_fab: ^2.1.1
+  extended_image: ^4.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -51,9 +53,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - lib/assets/images/logo.png
-    - lib/assets/images/sakalogo.png
-    - lib/assets/images/BackdropPanel.jpg
+    - lib/assets/images/
+  #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
