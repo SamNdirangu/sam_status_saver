@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sam_status_saver/providers/providers.dart';
+import 'package:sam_status_saver/providers/appProviders.dart';
 
-void main() {
-  runApp(Providers());
-}
+void main() => runApp(AppProviders());

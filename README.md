@@ -1,6 +1,6 @@
 # sam_status_saver
 
-Save and share your contacts statuses
+A new Flutter application.
 
 ## Getting Started
 
