@@ -5,8 +5,10 @@ import 'package:sam_status_saver/widgets/widgetActions.dart';
 
 class ImageContentView extends StatefulWidget {
   final currentIndex;
+  final bool isSavedFiles;
   final List<String> imagePaths;
-  const ImageContentView({Key? key, required this.currentIndex, required this.imagePaths}) : super(key: key);
+  const ImageContentView({Key? key, required this.currentIndex, required this.imagePaths, required this.isSavedFiles})
+      : super(key: key);
 
   @override
   _ImageContentViewState createState() => _ImageContentViewState();
@@ -82,9 +84,6 @@ class _ImageContentViewState extends State<ImageContentView> with TickerProvider
             opacity: _fabOpacity,
             duration: const Duration(milliseconds: 300),
             child: FunctionButtons(
-              snackBar: snackBar,
-              isImage: true,
-              filePath: filePath,
-            )));
+                snackBar: snackBar, isImage: true, filePath: filePath, isSavedFiles: widget.isSavedFiles)));
   }
 }

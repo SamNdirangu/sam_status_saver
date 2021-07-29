@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sam_status_saver/constants/appStrings.dart';
+import 'package:sam_status_saver/providers/appProviders.dart';
+import 'package:sam_status_saver/screens/home/tabs/savedFiles.dart';
 import 'package:sam_status_saver/screens/home/tabs/statusImages.dart';
 import 'package:sam_status_saver/screens/home/tabs/statusVideos.dart';
 import 'package:sam_status_saver/widgets/backdrop/backdrop.dart';
@@ -19,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _animationController = AnimationController(duration: Duration(milliseconds: 300), value: 1.0, vsync: this);
   }
 
@@ -32,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    //print('homePrinted');
+    final _refreshData = context.read(dataProvider).refreshData;
     return Backdrop(
         controller: _animationController,
         backTitle: const Text('More'),
@@ -48,20 +51,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   indicatorWeight: 3,
                   indicatorColor: Colors.white,
                   tabs: <Widget>[
-                    const Tab(text: 'Pictures'), const Tab(text: 'Videos'), //const Tab(text: 'Saved'),
+                    const Tab(text: 'Pictures'),
+                    const Tab(text: 'Videos'),
+                    const Tab(text: 'Saved'),
                   ],
                 ),
               ),
             ),
             backgroundColor: Colors.black,
-            body: HomeScreenContent(tabController: _tabController)));
+            body: HomeScreenContent(
+              tabController: _tabController,
+              refreshData: _refreshData,
+            )));
   }
 }
 
 class HomeScreenContent extends StatefulWidget {
   final TabController tabController;
+  final refreshData;
 
-  HomeScreenContent({Key? key, required this.tabController}) : super(key: key);
+  HomeScreenContent({Key? key, required this.tabController, required this.refreshData}) : super(key: key);
 
   @override
   _HomeScreenContentState createState() => _HomeScreenContentState();
@@ -81,7 +90,8 @@ class _HomeScreenContentState extends State<HomeScreenContent> with WidgetsBindi
   void didChangeAppLifecycleState(AppLifecycleState state) {
     //print('called');
     if (state == AppLifecycleState.resumed) {
-      //TODO
+      //refresh data
+      widget.refreshData();
     }
   }
 
@@ -100,8 +110,9 @@ class _HomeScreenContentState extends State<HomeScreenContent> with WidgetsBindi
     return TabBarView(
       controller: widget.tabController,
       children: <Widget>[
-        StatusImages(key: imageTab),
-        StatusVideos(key: videoTab),
+        StatusImages(key: imageTab, isSavedFiles: false),
+        StatusVideos(key: videoTab, isSavedFiles: false),
+        SavedFilesTab(key: savedTab)
       ],
     );
   }

@@ -66,8 +66,8 @@ class PermissionProvider with ChangeNotifier {
         permissionStatus.isDenied = _currentStatusManaged.isDenied;
         permissionStatus.isPermanentlyDenied = _currentStatusManaged.isPermanentlyDenied;
       } else {
-        //TODO:Show page indicating user will be redirected to the permisssion settings menu
-        requestPermission();
+        //Do nothing will show permission error
+        //requestPermission();
         return;
       }
     } else {

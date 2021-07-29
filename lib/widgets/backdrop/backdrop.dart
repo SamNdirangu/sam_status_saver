@@ -1,8 +1,8 @@
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sam_status_saver/providers/appProviders.dart';
 import 'package:share/share.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:sam_status_saver/constants/appStrings.dart';
-import 'package:sam_status_saver/providers/appSettingsProvider.dart';
 import 'package:sam_status_saver/widgets/backdrop/FrontLayer.dart';
 import 'package:sam_status_saver/widgets/backdrop/animationLayer.dart';
 import 'package:sam_status_saver/widgets/backdrop/backDropTitle.dart';
@@ -89,43 +89,46 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final _isDarkTheme = context.watch<AppSettingsProvider>().appSettings.isDarkTheme;
-    final _isDarkThemeFunc = context.read<AppSettingsProvider>().toggleDarkTheme;
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        brightness: Brightness.dark,
-        elevation: _frontLayerVisible ? 0 : 2,
-        titleSpacing: 0.0,
-        title: BackdropTitle(
-          listenable: _controller.view,
-          onPress: _toggleBackdropLayerVisibility,
-          frontTitle: widget.frontTitle,
-          backTitle: widget.backTitle,
-        ),
-        actions: <Widget>[
-          IconButton(
-            tooltip: "Share App",
-            icon: const Icon(Icons.share),
-            onPressed: () {
-              Share.share(AppStrings.share);
-            },
+    return Consumer(builder: (context, watch, child) {
+      final _isDarkTheme = watch(appSettingsProvider).appSettings.isDarkTheme;
+      final _isDarkThemeFunc = context.read(appSettingsProvider).toggleDarkTheme;
+
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          brightness: Brightness.dark,
+          elevation: _frontLayerVisible ? 0 : 2,
+          titleSpacing: 0.0,
+          title: BackdropTitle(
+            listenable: _controller.view,
+            onPress: _toggleBackdropLayerVisibility,
+            frontTitle: widget.frontTitle,
+            backTitle: widget.backTitle,
           ),
-          IconButton(
-              tooltip: "Dark Theme",
-              icon: _isDarkTheme ? Icon(Icons.brightness_7) : Icon(Icons.brightness_3),
-              onPressed: () => _isDarkThemeFunc()),
-          IconButton(
-              icon: AnimatedIcon(
-                icon: AnimatedIcons.close_menu,
-                progress: _controller,
-              ),
-              onPressed: () => _toggleBackdropLayerVisibility()),
-        ],
-      ),
-      body: LayoutBuilder(
-        builder: _buildStack,
-      ),
-    );
+          actions: <Widget>[
+            IconButton(
+              tooltip: "Share App",
+              icon: const Icon(Icons.share),
+              onPressed: () {
+                Share.share(AppStrings.share);
+              },
+            ),
+            IconButton(
+                tooltip: "Dark Theme",
+                icon: _isDarkTheme ? Icon(Icons.brightness_7) : Icon(Icons.brightness_3),
+                onPressed: () => _isDarkThemeFunc()),
+            IconButton(
+                icon: AnimatedIcon(
+                  icon: AnimatedIcons.close_menu,
+                  progress: _controller,
+                ),
+                onPressed: () => _toggleBackdropLayerVisibility()),
+          ],
+        ),
+        body: LayoutBuilder(
+          builder: _buildStack,
+        ),
+      );
+    });
   }
 }

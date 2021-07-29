@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sam_status_saver/providers/appProviders.dart';
 
-void main() => runApp(AppProviders());
+void main() => runApp(ProviderScope(child: AppProviders()));

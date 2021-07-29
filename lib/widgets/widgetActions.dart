@@ -5,11 +5,13 @@ import 'package:speed_dial_fab/speed_dial_fab.dart';
 
 class FunctionButtons extends StatelessWidget {
   final bool isImage;
+  final bool isSavedFiles;
   final SnackBar snackBar;
   final String filePath;
 
   const FunctionButtons({
     Key? key,
+    required this.isSavedFiles,
     required this.snackBar,
     required this.filePath,
     required this.isImage,
@@ -22,7 +24,7 @@ class FunctionButtons extends StatelessWidget {
           secondaryIconsList: [
             Icons.reply,
             Icons.share,
-            Icons.save,
+            !isSavedFiles ? Icons.save : Icons.delete,
           ],
           secondaryIconsText: [
             "repost",
@@ -30,9 +32,9 @@ class FunctionButtons extends StatelessWidget {
             "save",
           ],
           secondaryIconsOnPress: [
-            () => {},
+            () => repostFile(filePath: filePath),
             () => shareFiles(filePath: filePath, isImage: isImage),
-            () => saveFile(context: context, snackBar: snackBar, filePath: filePath),
+            () => saveDeleteFile(context: context, snackBar: snackBar, filePath: filePath, isSavedFiles: isSavedFiles),
           ],
           secondaryBackgroundColor: colorCustom,
           secondaryForegroundColor: Colors.white,

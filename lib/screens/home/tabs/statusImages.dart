@@ -1,25 +1,28 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:sam_status_saver/providers/permissionProvider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sam_status_saver/constants/appStrings.dart';
+import 'package:sam_status_saver/providers/appProviders.dart';
 import 'package:sam_status_saver/widgets/DefaultErrorPanel.dart';
-import 'package:provider/provider.dart';
 import 'package:sam_status_saver/functions/pageRouter.dart';
-import 'package:sam_status_saver/providers/dataProvider.dart';
 import 'package:sam_status_saver/screens/contentViewScreens/Imagecontent.dart';
 
-class StatusImages extends StatelessWidget {
-  const StatusImages({Key? key}) : super(key: key);
+class StatusImages extends ConsumerWidget {
+  final bool isSavedFiles;
+  const StatusImages({Key? key, required this.isSavedFiles}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ScopedReader watch) {
     //Get our provider watcher and functions
-    final _imagePaths = context.watch<DataProvider>().dataStatus.images;
-    final _isLoading = context.watch<DataProvider>().dataStatus.isLoading;
-    final _dataError = context.watch<DataProvider>().dataStatus.errorMsg;
-    final _permissionStatus = context.watch<PermissionProvider>().permissionStatus;
+
+    final _imagePaths =
+        isSavedFiles ? watch(dataProvider).dataStatus.savedImages : watch(dataProvider).dataStatus.images;
+    final _isLoading = watch(dataProvider).dataStatus.isLoading;
+    final _dataError = watch(dataProvider).dataStatus.errorMsg;
+    final _permissionStatus = watch(permissionProvider).permissionStatus;
     //
-    Future<void> _pullToRefresh() => context.read<DataProvider>().refreshData();
-    void _pressToRefresh() => context.read<DataProvider>().refreshData;
+    Future<void> _pullToRefresh() => context.read(dataProvider).refreshData();
+    void _pressToRefresh() => context.read(dataProvider).refreshData();
 
     //
     if (!_permissionStatus.isGranted || _dataError != null) {
@@ -39,6 +42,9 @@ class StatusImages extends StatelessWidget {
     }
     //
     if (_imagePaths!.isEmpty) {
+      String infoString = AppStrings.noPictures;
+      if (isSavedFiles) infoString = AppStrings.noSavedPictures;
+
       return Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           const Icon(
@@ -47,9 +53,13 @@ class StatusImages extends StatelessWidget {
             color: Colors.white,
           ),
           const SizedBox(height: 10),
-          const Text(
-            'Hey it seems you dont have any status pictues yet.\n\n Once you view a few come back and see them here',
-            style: TextStyle(color: Colors.white),
+          Container(
+            padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+            child: Text(
+              infoString,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
@@ -75,8 +85,8 @@ class StatusImages extends StatelessWidget {
                 padding: const EdgeInsets.all(1.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context)
-                        .push(pageRouter(ImageContentView(imagePaths: _imagePaths, currentIndex: index)));
+                    Navigator.of(context).push(pageRouter(
+                        ImageContentView(imagePaths: _imagePaths, currentIndex: index, isSavedFiles: isSavedFiles)));
                   },
                   child: Image.file(
                     File(_imagePaths[index]),

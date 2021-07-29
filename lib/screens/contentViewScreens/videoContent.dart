@@ -6,8 +6,10 @@ import 'package:sam_status_saver/providers/dataProvider.dart';
 
 class VideoContentView extends StatefulWidget {
   final currentIndex;
+  final bool isSavedFiles;
   final List<VideoFile> videoFiles;
-  const VideoContentView({Key? key, required this.currentIndex, required this.videoFiles}) : super(key: key);
+  const VideoContentView({Key? key, required this.isSavedFiles, this.currentIndex, required this.videoFiles})
+      : super(key: key);
 
   @override
   _VideoContentViewState createState() => _VideoContentViewState();
@@ -309,6 +311,7 @@ class _VideoContentViewState extends State<VideoContentView> with SingleTickerPr
               snackBar: snackBar,
               isImage: false,
               filePath: videoFiles[currentIndex].videoPath,
+              isSavedFiles: widget.isSavedFiles,
             )));
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +8,23 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 
 //Our video model
 class VideoFile {
-  String thumbnailName;
-  String thumbnailPath;
-  String videoPath;
+  late String thumbnailName;
+  late String thumbnailPath;
+  late String videoPath;
   VideoFile({required this.thumbnailName, required this.thumbnailPath, required this.videoPath});
+
+  VideoFile.fromJson(Map<String, dynamic> json) {
+    videoPath = json['videoPath'];
+    thumbnailPath = json['thumbnailPath'];
+    thumbnailName = json['thumbnailName'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['videoPath'] = this.videoPath;
+    data['thumbnailPath'] = this.thumbnailPath;
+    data['thumbnailName'] = this.thumbnailName;
+    return data;
+  }
 }
 
 //Our data provider model
@@ -19,6 +33,7 @@ class DataStatus {
   String? errorMsg;
   bool isLoading;
   //Settings Params
+  bool newSource;
   String sourcePath = FolderPaths.standardStatuses;
   bool isBusinessMode;
   bool isWhatsAppInstalled;
@@ -26,9 +41,11 @@ class DataStatus {
   bool whatsAppBusinessReady;
   //Data Params
   List<String>? images;
-  List<VideoFile>? videos;
+  String? videos;
+  List<VideoFile>? trackerVideos;
   List<String>? savedImages;
-  List<VideoFile>? savedVideos;
+  String? savedVideos;
+  List<VideoFile>? trackerSavedVideos;
 
   DataStatus({
     this.errorMsg,
@@ -37,6 +54,7 @@ class DataStatus {
     this.videos,
     this.savedImages,
     this.savedVideos,
+    this.newSource = false,
     this.isBusinessMode = false,
     this.isWhatsAppInstalled = false,
     this.whatsAppBusinessReady = false,
@@ -46,8 +64,8 @@ class DataStatus {
 
 class DataProvider with ChangeNotifier {
   //Declare our getters and globals
-  DataStatus dataStatus = DataStatus();
-  //DataProvider({required this.dataStatus});
+  DataStatus dataStatus;
+  DataProvider({required this.dataStatus});
 
   //////////////////////////////////////////////////////////////////////////
   void loadData() {
@@ -67,7 +85,13 @@ class DataProvider with ChangeNotifier {
       dataStatus.isBusinessMode = true;
       dataStatus.isWhatsAppInstalled = true;
       dataStatus.whatsAppBusinessReady = true;
-      dataStatus.sourcePath = FolderPaths.standardStatuses;
+      dataStatus.sourcePath = FolderPaths.businessStatuses;
+    } else if (Directory(FolderPaths.businessStatusesFB).existsSync()) {
+      dataStatus.newSource = true;
+      dataStatus.isBusinessMode = true;
+      dataStatus.isWhatsAppInstalled = true;
+      dataStatus.whatsAppBusinessReady = true;
+      dataStatus.sourcePath = FolderPaths.businessStatusesFB;
     }
     if (Directory(FolderPaths.standardStatuses).existsSync()) {
       //Start our app in standard mode
@@ -75,6 +99,13 @@ class DataProvider with ChangeNotifier {
       dataStatus.isWhatsAppInstalled = true;
       dataStatus.whatsAppStandardReady = true;
       dataStatus.sourcePath = FolderPaths.standardStatuses;
+    } else if (Directory(FolderPaths.standardStatusesFB).existsSync()) {
+      //Start our app in standard mode
+      dataStatus.newSource = true;
+      dataStatus.isBusinessMode = false;
+      dataStatus.isWhatsAppInstalled = true;
+      dataStatus.whatsAppStandardReady = true;
+      dataStatus.sourcePath = FolderPaths.standardStatusesFB;
     }
     return;
   }
@@ -177,7 +208,7 @@ class DataProvider with ChangeNotifier {
             _refreshCount = 0;
             dataStatus.isLoading = false;
             dataStatus.images = _statusImages;
-            dataStatus.videos = _statusVideos;
+            dataStatus.videos = jsonEncode(_statusVideos);
             notifyListeners();
           }
         }
@@ -185,9 +216,8 @@ class DataProvider with ChangeNotifier {
     }
     dataStatus.isLoading = false;
     dataStatus.images = _statusImages;
-    dataStatus.videos = _statusVideos;
-
-    print(dataStatus.videos!.length.toString());
+    dataStatus.videos = jsonEncode(_statusVideos);
+    dataStatus.trackerVideos = _statusVideos;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -244,7 +274,8 @@ class DataProvider with ChangeNotifier {
       }
     }
     dataStatus.savedImages = _savedStatusImages;
-    dataStatus.savedVideos = _savedStatusVideos;
+    dataStatus.savedVideos = jsonEncode(_savedStatusVideos);
+    dataStatus.trackerSavedVideos = _savedStatusVideos;
     notifyListeners();
   }
 
@@ -252,8 +283,8 @@ class DataProvider with ChangeNotifier {
   void _garbageCollector(List<FileSystemEntity> temporaryFiles) {
     //Go through each of our temporary files deleting trash
     //Sort newest to old files.
-    List<VideoFile>? statusThumbnails = dataStatus.videos;
-    List<VideoFile>? savedThumbnails = dataStatus.savedVideos;
+    List<VideoFile>? statusThumbnails = dataStatus.trackerVideos;
+    List<VideoFile>? savedThumbnails = dataStatus.trackerSavedVideos;
     for (var file in temporaryFiles) {
       final String _fileName = basename(file.path);
       //
@@ -299,8 +330,9 @@ class DataProvider with ChangeNotifier {
   void toggleStatusMode() {
     dataStatus.isBusinessMode = !dataStatus.isBusinessMode;
     dataStatus.isBusinessMode
-        ? dataStatus.sourcePath = FolderPaths.businessStatuses
-        : dataStatus.sourcePath = FolderPaths.standardStatuses;
-    //TODO Add refresh data function
+        ? dataStatus.sourcePath = dataStatus.newSource ? FolderPaths.businessStatusesFB : FolderPaths.businessStatuses
+        : dataStatus.sourcePath = dataStatus.newSource ? FolderPaths.standardStatusesFB : FolderPaths.standardStatuses;
+    //Refresh data
+    refreshData();
   }
 }

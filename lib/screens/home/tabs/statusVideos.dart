@@ -1,32 +1,42 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sam_status_saver/constants/appStrings.dart';
+import 'package:sam_status_saver/providers/appProviders.dart';
 import 'package:sam_status_saver/providers/dataProvider.dart';
+
 import 'package:sam_status_saver/widgets/DefaultErrorPanel.dart';
 import 'package:sam_status_saver/functions/pageRouter.dart';
-import 'package:sam_status_saver/providers/permissionProvider.dart';
 import 'package:sam_status_saver/screens/contentViewScreens/videoContent.dart';
 
-class StatusVideos extends StatelessWidget {
-  const StatusVideos({Key? key}) : super(key: key);
+class StatusVideos extends ConsumerWidget {
+  final bool isSavedFiles;
+  const StatusVideos({Key? key, required this.isSavedFiles}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ScopedReader watch) {
     //Get our provider watcher and functions
-    final _videos = context.watch<DataProvider>().dataStatus.videos;
-    final _isLoading = context.watch<DataProvider>().dataStatus.isLoading;
-    final _dataError = context.watch<DataProvider>().dataStatus.errorMsg;
-    final _permissionStatus = context.watch<PermissionProvider>().permissionStatus;
+    final _isLoading = watch(dataProvider).dataStatus.isLoading;
+    final _dataError = watch(dataProvider).dataStatus.errorMsg;
+    final _permissionStatus = watch(permissionProvider).permissionStatus;
     //
-    Future<void> _pullToRefresh() => context.read<DataProvider>().refreshData();
-    void _pressToRefresh() => context.read<DataProvider>().refreshData();
+    Future<void> _pullToRefresh() => context.read(dataProvider).refreshData();
+    void _pressToRefresh() => context.read(dataProvider).refreshData();
 
     //
     if (!_permissionStatus.isGranted || _dataError != null) {
       return DefaultErrorPanel(); //Show our default Error Widget incase as we cant read or whatsapp folders dont exist
     }
-    //
+    //////////////////////////////////////////////////////////////////////////////
+    //Load our videos
+    final _videoJson = isSavedFiles
+        ? jsonDecode(watch(dataProvider).dataStatus.savedVideos!) as List
+        : jsonDecode(watch(dataProvider).dataStatus.videos!) as List;
+    final _videos = _videoJson.map((data) => VideoFile.fromJson(data)).toList();
+
+    ///
+    ///
     if (_isLoading) {
       return Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
         const CircularProgressIndicator(),
@@ -37,9 +47,12 @@ class StatusVideos extends StatelessWidget {
             textAlign: TextAlign.center, textScaleFactor: 1.2, style: TextStyle(color: Colors.white)),
       ]);
     }
-    //
+
     ///
-    if (_videos!.isEmpty) {
+    ///
+    if (_videos.isEmpty) {
+      String infoString = AppStrings.noVideos;
+      if (isSavedFiles) infoString = AppStrings.noSavedVideos;
       return Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           const Icon(
@@ -48,8 +61,8 @@ class StatusVideos extends StatelessWidget {
             color: Colors.white,
           ),
           const SizedBox(height: 10),
-          const Text(
-            'Hey it seems you dont have any status _videos yet.\n\n Once you view a few come back and see them here',
+          Text(
+            infoString,
             style: TextStyle(color: Colors.white),
           ),
           const SizedBox(height: 20),
@@ -77,7 +90,8 @@ class StatusVideos extends StatelessWidget {
               padding: const EdgeInsets.all(1.0),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(pageRouter(VideoContentView(videoFiles: _videos, currentIndex: index)));
+                  Navigator.of(context).push(pageRouter(
+                      VideoContentView(videoFiles: _videos, currentIndex: index, isSavedFiles: isSavedFiles)));
                 },
                 child: Image.file(
                   File(_videos[index].thumbnailPath),

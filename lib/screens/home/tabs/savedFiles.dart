@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sam_status_saver/screens/home/tabs/statusImages.dart';
+import 'package:sam_status_saver/screens/home/tabs/statusVideos.dart';
 
 class SavedFilesTab extends StatefulWidget {
   const SavedFilesTab({Key? key}) : super(key: key);
@@ -37,7 +39,7 @@ class _SavedFilesTabState extends State<SavedFilesTab> with TickerProviderStateM
         child: Scaffold(
           appBar: TabBar(
             controller: _tabController,
-            indicatorWeight: 2,
+            indicatorWeight: 3,
             indicatorColor: Theme.of(context).primaryColor,
             tabs: <Widget>[
               const Tab(
@@ -50,8 +52,8 @@ class _SavedFilesTabState extends State<SavedFilesTab> with TickerProviderStateM
           body: TabBarView(
             controller: _tabController,
             children: <Widget>[
-              //SavedStatusImages(key: imageTab),
-              //SavedStatusVideos(key: videoTab),
+              StatusImages(key: imageTab, isSavedFiles: true),
+              StatusVideos(key: videoTab, isSavedFiles: true),
             ],
           ),
         ));

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:sam_status_saver/providers/dataProvider.dart';
-import 'package:provider/provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sam_status_saver/constants/configs.dart';
+import 'package:sam_status_saver/providers/appProviders.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sam_status_saver/providers/permissionProvider.dart';
 
-class DefaultErrorPanel extends StatelessWidget {
+class DefaultErrorPanel extends ConsumerWidget {
   const DefaultErrorPanel({
     Key? key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final _permissionStatus = context.watch<PermissionProvider>().permissionStatus;
-    final _dataError = context.watch<DataProvider>().dataStatus.errorMsg;
-    final _requestPermission = context.read<PermissionProvider>().requestPermission;
+  Widget build(BuildContext context, ScopedReader watch) {
+    final _permissionStatus = watch(permissionProvider).permissionStatus;
+    final _dataError = watch(dataProvider).dataStatus.errorMsg;
+    final _requestPermission = context.read(permissionProvider).requestPermission;
 
     if (_permissionStatus.errorMsg != null || _dataError != null) {
       var _appError;
@@ -34,9 +34,8 @@ class DefaultErrorPanel extends StatelessWidget {
     }
 
     if (!_permissionStatus.isGranted) {
-      var permissionError = 'Please enable Permissions to access storage';
-      if (_permissionStatus.isPermanentlyDenied)
-        permissionError = 'Please go to settings and enable Permissions to access storage';
+      var permissionError = AppMessageStrings.permEnablePermissions;
+      if (_permissionStatus.isPermanentlyDenied) permissionError = AppMessageStrings.permOpenPermissionSettings;
       //
 
       return Center(
@@ -47,9 +46,13 @@ class DefaultErrorPanel extends StatelessWidget {
           color: Colors.white,
         ),
         const SizedBox(height: 10),
-        Text(
-          permissionError,
-          style: TextStyle(color: Colors.white),
+        Container(
+          padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+          child: Text(
+            permissionError,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         const SizedBox(height: 10),
         ElevatedButton(
@@ -74,7 +77,7 @@ class DefaultErrorPanel extends StatelessWidget {
         const Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40.0),
           child: Text(
-            'Hey it seems you might have not yet installed Whastapp on your phone\n\nThis app requires Whatsapp',
+            AppMessageStrings.errWhatsappNotInstalled,
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white),
           ),
