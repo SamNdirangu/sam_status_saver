@@ -1,11 +1,12 @@
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:sam_status_saver/providers/appProviders.dart';
+import 'package:sam_status_saver/constants/constant.strings.dart';
+import 'package:sam_status_saver/providers/all.providers.dart';
 import 'package:share/share.dart';
 import 'package:flutter/material.dart';
-import 'package:sam_status_saver/constants/appStrings.dart';
-import 'package:sam_status_saver/widgets/backdrop/FrontLayer.dart';
-import 'package:sam_status_saver/widgets/backdrop/animationLayer.dart';
-import 'package:sam_status_saver/widgets/backdrop/backDropTitle.dart';
+import 'package:sam_status_saver/widgets/backdrop/front_layer.dart';
+import 'package:sam_status_saver/widgets/backdrop/animation.layer.dart';
+import 'package:sam_status_saver/widgets/backdrop/backdrop.title.dart';
 
 /// Builds a Backdrop.
 ///
@@ -21,6 +22,7 @@ class Backdrop extends StatefulWidget {
   final AnimationController controller;
 
   const Backdrop({
+    super.key,
     required this.frontLayer,
     required this.backLayer,
     required this.frontTitle,
@@ -29,10 +31,10 @@ class Backdrop extends StatefulWidget {
   });
 
   @override
-  _BackdropState createState() => _BackdropState();
+  BackdropState createState() => BackdropState();
 }
 
-class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin {
+class BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey _backdropKey = GlobalKey(debugLabel: 'Backdrop');
   late AnimationController _controller;
@@ -89,14 +91,14 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(builder: (context, watch, child) {
-      final _isDarkTheme = watch(appSettingsProvider).appSettings.isDarkTheme;
-      final _isDarkThemeFunc = context.read(appSettingsProvider).toggleDarkTheme;
+    return Consumer(builder: (context, ref, child) {
+      final isDarkTheme = ref.watch(appSettingsProvider).isDarkTheme;
+      final funcToggleDarkTheme = ref.read(appSettingsProvider.notifier).toggleDarkTheme;
 
       return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          brightness: Brightness.dark,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
           elevation: _frontLayerVisible ? 0 : 2,
           titleSpacing: 0.0,
           title: BackdropTitle(
@@ -110,13 +112,13 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
               tooltip: "Share App",
               icon: const Icon(Icons.share),
               onPressed: () {
-                Share.share(AppStrings.share);
+                Share.share(ConstantAppStrings.share);
               },
             ),
             IconButton(
                 tooltip: "Dark Theme",
-                icon: _isDarkTheme ? Icon(Icons.brightness_7) : Icon(Icons.brightness_3),
-                onPressed: () => _isDarkThemeFunc()),
+                icon: isDarkTheme ? const Icon(Icons.brightness_7) : const Icon(Icons.brightness_3),
+                onPressed: () => funcToggleDarkTheme()),
             IconButton(
                 icon: AnimatedIcon(
                   icon: AnimatedIcons.close_menu,
