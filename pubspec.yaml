@@ -39,6 +39,7 @@ dependencies:
   url_launcher: ^6.1.12
   speed_dial_fab: ^2.3.0
   extended_image: ^8.0.2
+  share_whatsapp: ^1.0.2
   video_thumbnail: ^0.5.3
   shared_preferences: ^2.2.0
   permission_handler: ^8.1.4+2

@@ -6,6 +6,7 @@ import 'package:share/share.dart';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sam_status_saver/constants/constant.configs.dart';
+import 'package:share_whatsapp/share_whatsapp.dart';
 
 class ShareSaveFile {
   String memeType;
@@ -43,11 +44,7 @@ saveDeleteFile({
 }
 
 repostFile({required String filePath}) {
-  // final fileBytes = File(filePath).readAsBytesSync();
-  //Samsflutt.shareFile(fileBytes, basename(filePath), '*/*', shareTitle: 'Share with', appToShare: 'com.whatsapp')
-  //    .catchError((e) {
-  //  print(e);
-  //});
+  shareWhatsapp.shareFile(XFile(filePath));
 }
 
 shareFiles({List<ShareSaveFile>? files, String? filePath, required bool isImage}) async {

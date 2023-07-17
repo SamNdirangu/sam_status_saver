@@ -47,11 +47,9 @@ class BackdropPanelState extends State<BackdropPanel> {
       void toggleWhatsAppMode() {
         if (!permissionGranted) {
           showErrorMessage(0);
-        } else if (dataStatus.isBusinessMode &&
-            !dataStatus.whatsAppStandardReady) {
+        } else if (dataStatus.isBusinessMode && !dataStatus.whatsAppStandardReady) {
           showErrorMessage(1);
-        } else if (!dataStatus.isBusinessMode &&
-            !dataStatus.whatsAppBusinessReady) {
+        } else if (!dataStatus.isBusinessMode && !dataStatus.whatsAppBusinessReady) {
           showErrorMessage(2);
         } else {
           toggleAppMode();
@@ -88,9 +86,8 @@ class BackdropPanelState extends State<BackdropPanel> {
                                 child: Text("Sam's Status Saver",
                                     textScaleFactor: 1.8,
                                     textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).primaryColor)),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
                               ),
                             ),
                             const Align(
@@ -99,9 +96,7 @@ class BackdropPanelState extends State<BackdropPanel> {
                                 padding: EdgeInsets.only(left: 8.0),
                                 child: Text(
                                   "Version: 23.7.17.1",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87),
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                                 ),
                               ),
                             ),
@@ -117,8 +112,7 @@ class BackdropPanelState extends State<BackdropPanel> {
                       padding: EdgeInsets.only(left: 16.0),
                       child: Text(
                         "Please select your Whatsapp version below to view status",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black87),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                       ),
                     ),
                   ),
@@ -129,27 +123,17 @@ class BackdropPanelState extends State<BackdropPanel> {
                       children: <Widget>[
                         ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: favStandard
-                                  ? colorCustom
-                                  : Colors.grey.shade700,
+                              backgroundColor: favStandard ? colorCustom : Colors.grey.shade700,
                             ),
-                            child: const Text('Standard',
-                                style: TextStyle(color: Colors.white)),
-                            onPressed: () => !dataStatus.isBusinessMode
-                                ? toggleWhatsAppMode()
-                                : {}),
+                            child: const Text('Standard', style: TextStyle(color: Colors.white)),
+                            onPressed: () => !dataStatus.isBusinessMode ? toggleWhatsAppMode() : {}),
                         const SizedBox(width: 20),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: favBusiness
-                                ? colorCustom
-                                : Colors.grey.shade700,
+                            backgroundColor: favBusiness ? colorCustom : Colors.grey.shade700,
                           ),
-                          onPressed: () => !dataStatus.isBusinessMode
-                              ? toggleWhatsAppMode()
-                              : {},
-                          child: const Text('Business',
-                              style: TextStyle(color: Colors.white)),
+                          onPressed: () => !dataStatus.isBusinessMode ? toggleWhatsAppMode() : {},
+                          child: const Text('Business', style: TextStyle(color: Colors.white)),
                         ),
                       ],
                     ),
@@ -162,9 +146,7 @@ class BackdropPanelState extends State<BackdropPanel> {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(infoMessage,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2E7D32))),
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
                     ),
                   ),
                 ],
@@ -173,29 +155,22 @@ class BackdropPanelState extends State<BackdropPanel> {
             const Padding(
               padding: EdgeInsets.only(left: 8.0, top: 20.0, right: 10.0),
               child: Text(ConstantAppStrings.hintMessage,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.black87, fontWeight: FontWeight.w600)),
+                  textAlign: TextAlign.center, style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 8.0, top: 20.0, right: 10.0, bottom: 10),
+              padding: const EdgeInsets.only(left: 8.0, top: 20.0, right: 10.0, bottom: 10),
               child: GestureDetector(
                 onTap: () => launchUrl(
-                  Uri.https(
-                      'samndirangu.github.io/apps/SamsStatusSaver/privacy-policy.html'),
+                  Uri.https('samndirangu.github.io/apps/SamsStatusSaver/privacy-policy.html'),
                 ),
                 child: const Text('Privacy Policy & Terms and Condition',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: Color(0xFF2E7D32),
-                        fontWeight: FontWeight.w600)),
+                        decoration: TextDecoration.underline, color: Color(0xFF2E7D32), fontWeight: FontWeight.w600)),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 8.0, top: 10.0, right: 10.0, bottom: 10),
+              padding: const EdgeInsets.only(left: 8.0, top: 10.0, right: 10.0, bottom: 10),
               child: GestureDetector(
                 onTap: () => launchUrl(
                   Uri.https('github.com/SamNdirangu/status_saver'),
@@ -203,9 +178,7 @@ class BackdropPanelState extends State<BackdropPanel> {
                 child: const Text('Github Repo',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: Color(0xFF2E7D32),
-                        fontWeight: FontWeight.w600)),
+                        decoration: TextDecoration.underline, color: Color(0xFF2E7D32), fontWeight: FontWeight.w600)),
               ),
             ),
             const SaleWidget(),
@@ -227,14 +200,12 @@ class BackdropPanelState extends State<BackdropPanel> {
     }
     if (code == 1) {
       setState(() {
-        infoMessage =
-            "Sorry but you dont have the standard WhatsApp version installed";
+        infoMessage = "Sorry but you dont have the standard WhatsApp version installed";
         isMessageOpacity = 1.0 - isMessageOpacity;
       });
     } else {
       setState(() {
-        infoMessage =
-            "Sorry but you dont have the WhatsApp Business version installed";
+        infoMessage = "Sorry but you dont have the WhatsApp Business version installed";
         isMessageOpacity = 1.0 - isMessageOpacity;
       });
     }
@@ -273,67 +244,60 @@ class SaleWidget extends StatelessWidget {
           height: 200,
         ),
         Padding(
-            padding:
-                const EdgeInsets.only(left: 10, right: 10, top: 15, bottom: 10),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    ConstantAppStrings.sale,
-                    textAlign: TextAlign.center,
-                    textScaleFactor: 1.8,
-                    style: TextStyle(color: Theme.of(context).primaryColor),
+            padding: const EdgeInsets.only(left: 10, right: 10, top: 15, bottom: 10),
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+              Text(
+                ConstantAppStrings.sale,
+                textAlign: TextAlign.center,
+                textScaleFactor: 1.8,
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              ),
+              const Text(ConstantAppStrings.sale2,
+                  textAlign: TextAlign.center, style: TextStyle(color: Colors.black87)),
+              const SizedBox(height: 5),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(elevation: 5, backgroundColor: Colors.white),
+                autofocus: true,
+                icon: const Icon(
+                  Icons.call,
+                  size: 22,
+                ),
+                label: Text(
+                  "+254 712 77 8056",
+                  style: TextStyle(
+                    color: theme.primaryColor,
                   ),
-                  const Text(ConstantAppStrings.sale2,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.black87)),
-                  const SizedBox(height: 5),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                        elevation: 5, backgroundColor: Colors.white),
-                    autofocus: true,
-                    icon: const Icon(
-                      Icons.call,
-                      size: 22,
-                    ),
-                    label: Text(
-                      "+254 712 77 8056",
-                      style: TextStyle(
-                        color: theme.primaryColor,
-                      ),
-                    ),
-                    onPressed: () async {
-                      await launchUrl(
-                        Uri.http('tel:+254712778056'),
-                      );
-                    },
+                ),
+                onPressed: () async {
+                  await launchUrl(
+                    Uri.http('tel:+254712778056'),
+                  );
+                },
+              ),
+              const SizedBox(height: 5),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(elevation: 5, backgroundColor: Colors.white),
+                autofocus: true,
+                icon: const Icon(
+                  Icons.mail,
+                  size: 22,
+                ),
+                label: Text(
+                  "sakadevsinc@gmail.com",
+                  style: TextStyle(
+                    color: theme.primaryColor,
                   ),
-                  const SizedBox(height: 5),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                        elevation: 5, backgroundColor: Colors.white),
-                    autofocus: true,
-                    icon: const Icon(
-                      Icons.mail,
-                      size: 22,
-                    ),
-                    label: Text(
-                      "sakadevsinc@gmail.com",
-                      style: TextStyle(
-                        color: theme.primaryColor,
-                      ),
-                    ),
-                    onPressed: () async {
-                      await launchUrl(
-                        Uri.http(
-                            'mailto:sakadevsinc@gmail.com?subject=Hey there I need an App'),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  const Text('SakaDevs Inc © 2021  App made with Flutter',
-                      style: TextStyle(color: Colors.black87))
-                ])),
+                ),
+                onPressed: () async {
+                  await launchUrl(
+                    Uri.http('mailto:sakadevsinc@gmail.com?subject=Hey there I need an App'),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              Text('SakaDevs Inc © ${DateTime.now().year}  App made with Flutter',
+                  style: const TextStyle(color: Colors.black87))
+            ])),
       ],
     );
   }
