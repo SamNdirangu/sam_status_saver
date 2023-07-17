@@ -5,19 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Mode",
+            "name": "sam_status_saver",
             "request": "launch",
-            "type": "dart",
-            "flutterMode": "debug"
+            "type": "dart"
         },
         {
-            "name": "profile mode",
+            "name": "sam_status_saver (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "Release",
+            "name": "sam_status_saver (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
