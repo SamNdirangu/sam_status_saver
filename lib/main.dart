@@ -32,6 +32,7 @@ class App extends ConsumerWidget {
       theme: ThemeData(
         primaryColor: colorCustom,
         colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: colorCustom,
           accentColor: colorCustom,
         ),
       ),
