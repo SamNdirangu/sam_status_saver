@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:path/path.dart';
-import 'package:flutter/material.dart';
-import 'package:sam_status_saver/providers/all.providers.dart';
 import 'package:share/share.dart';
-
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:sam_status_saver/constants/constant.configs.dart';
+import 'package:flutter/material.dart';
 import 'package:share_whatsapp/share_whatsapp.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:sam_status_saver/providers/all.providers.dart';
+import 'package:sam_status_saver/constants/constant.configs.dart';
 
 class ShareSaveFile {
   String memeType;
@@ -32,7 +32,8 @@ saveDeleteFile({
     });
   } else {
     if (files == null) {
-      File(filePath!).copy('${ConstantFolderPaths.savesFolder}/${basename(filePath)}');
+      File(filePath!)
+          .copy('${ConstantFolderPaths.savesFolder}/${basename(filePath)}');
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
       for (var file in files) {
@@ -47,7 +48,10 @@ repostFile({required String filePath}) {
   shareWhatsapp.shareFile(XFile(filePath));
 }
 
-shareFiles({List<ShareSaveFile>? files, String? filePath, required bool isImage}) async {
+shareFiles(
+    {List<ShareSaveFile>? files,
+    String? filePath,
+    required bool isImage}) async {
   String memeType = 'video/mp4';
   //String repostTo = 'com.whatsapp';
   if (isImage) memeType = 'image/jpg';
@@ -64,6 +68,7 @@ shareFiles({List<ShareSaveFile>? files, String? filePath, required bool isImage}
       filePathList.add(file.filePath);
       memeTypeList.add(file.memeType);
     }
-    Share.shareFiles(filePathList, mimeTypes: memeTypeList).catchError((e) => {});
+    Share.shareFiles(filePathList, mimeTypes: memeTypeList)
+        .catchError((e) => {});
   }
 }
