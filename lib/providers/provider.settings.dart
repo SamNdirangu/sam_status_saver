@@ -55,7 +55,7 @@ class SettingsRepoFutureObject {
 class AppSettingsProvider extends StateNotifier<SettingsRepoFutureObject> {
   final _prefsKey = ConstantKeys.storageKeyForSettings;
   AppSettingsProvider() : super(const SettingsRepoFutureObject()) {
-    Future(() => _loadSettings());
+   Future(() => _loadSettings());
   }
 
   void _loadSettings() {

@@ -30,10 +30,10 @@ class App extends ConsumerWidget {
         ),
       ),
       theme: ThemeData(
-        primarySwatch: colorCustom,
-
-        ///  accentColor: colorCustom,
-        brightness: isDarkTheme ? Brightness.dark : Brightness.light,
+        primaryColor: colorCustom,
+        colorScheme: ColorScheme.fromSwatch(
+          accentColor: colorCustom,
+        ),
       ),
       themeMode: isDarkTheme ? ThemeMode.dark : ThemeMode.light,
       home: const HomeScreen(),

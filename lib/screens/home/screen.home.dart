@@ -17,7 +17,7 @@ class HomeScreen extends HookConsumerWidget {
     final tabController = useTabController(initialLength: 3);
     final animationController = useAnimationController(duration: const Duration(milliseconds: 300), initialValue: 1);
 
-    final funcRefreshData = ref.read(dataProvider.notifier).refreshData();
+    final funcRefreshData = ref.read(dataProvider.notifier).refreshData;
 
     return Backdrop(
         controller: animationController,
@@ -51,7 +51,7 @@ class HomeScreen extends HookConsumerWidget {
 
 class HomeScreenContent extends StatefulWidget {
   final TabController tabController;
-  final refreshData;
+  final Function refreshData;
 
   const HomeScreenContent({Key? key, required this.tabController, required this.refreshData}) : super(key: key);
 

@@ -44,7 +44,7 @@ class PermissionProvider extends StateNotifier<PermissionStatus> {
   int androidSDK = 30;
   //Add our constructor to load our permissions.
   PermissionProvider() : super(const PermissionStatus()) {
-    Future(() => _loadPermission());
+   Future(() => _loadPermission());
   }
 
   Future<void> requestPermission() async {

@@ -34,7 +34,8 @@ class Backdrop extends StatefulWidget {
   BackdropState createState() => BackdropState();
 }
 
-class BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin {
+class BackdropState extends State<Backdrop>
+    with SingleTickerProviderStateMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey _backdropKey = GlobalKey(debugLabel: 'Backdrop');
   late AnimationController _controller;
@@ -56,7 +57,8 @@ class BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin 
 
   bool get _frontLayerVisible {
     final AnimationStatus status = _controller.status;
-    return status == AnimationStatus.completed || status == AnimationStatus.forward;
+    return status == AnimationStatus.completed ||
+        status == AnimationStatus.forward;
   }
 
   void _toggleBackdropLayerVisibility() {
@@ -71,7 +73,8 @@ class BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin 
     final Size layerSize = constraints.biggest;
     final double layerTop = layerSize.height - layerTitleHeight;
 
-    _layerAnimation = getLayerAnimation(layerSize, layerTop, _frontLayerVisible, _controller);
+    _layerAnimation =
+        getLayerAnimation(layerSize, layerTop, _frontLayerVisible, _controller);
 
     return Stack(
       key: _backdropKey,
@@ -93,12 +96,12 @@ class BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin 
   Widget build(BuildContext context) {
     return Consumer(builder: (context, ref, child) {
       final isDarkTheme = ref.watch(appSettingsProvider).isDarkTheme;
-      final funcToggleDarkTheme = ref.read(appSettingsProvider.notifier).toggleDarkTheme;
+      final funcToggleDarkTheme =
+          ref.read(appSettingsProvider.notifier).toggleDarkTheme;
 
       return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          systemOverlayStyle: SystemUiOverlayStyle.light,
           elevation: _frontLayerVisible ? 0 : 2,
           titleSpacing: 0.0,
           title: BackdropTitle(
@@ -117,7 +120,9 @@ class BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin 
             ),
             IconButton(
                 tooltip: "Dark Theme",
-                icon: isDarkTheme ? const Icon(Icons.brightness_7) : const Icon(Icons.brightness_3),
+                icon: isDarkTheme
+                    ? const Icon(Icons.brightness_7)
+                    : const Icon(Icons.brightness_3),
                 onPressed: () => funcToggleDarkTheme()),
             IconButton(
                 icon: AnimatedIcon(

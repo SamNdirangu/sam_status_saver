@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
 import 'package:path/path.dart';
 
 import 'package:flutter/material.dart';
@@ -108,10 +108,9 @@ class DataProvider extends StateNotifier<DataStatus> {
     Future(() => _loadData());
   }
 
-  Future<void> _loadData() async {
+  void _loadData() {
     //This function will set up required directories and also identify various options available
     bootupAngie();
-    refreshData();
   }
 
   //---------------------------------------------------------------------------------------------------
@@ -138,7 +137,7 @@ class DataProvider extends StateNotifier<DataStatus> {
         sourcePath: ConstantFolderPaths.standardStatuses,
       );
     }
-    return;
+    refreshData();
   }
 
   //------------------------------------------------------------------------
@@ -146,7 +145,7 @@ class DataProvider extends StateNotifier<DataStatus> {
     //Error handling
     final errorData = dataErrorCatcher(state);
     if (errorData.isError) {
-      //state = state.copyWith(isLoading: false, errorMsg: errorData.errorMsg);
+      state = state.copyWith(isLoading: false, errorMsg: errorData.errorMsg);
       return;
     }
     //Get our data
@@ -226,21 +225,10 @@ class DataProvider extends StateNotifier<DataStatus> {
             thumbnailPath: tempFilePath,
             thumbnailName: fileNameNoExt + Configs.thumbnailExt,
           ));
-          //refreshCount++;
-          //if (refreshCount > Configs.refreshLimit) {
-          //  refreshCount = 0;
-          //  state = state.copyWith(
-          //    isLoading: false,
-          //    images: statusImages,
-          //    videos: jsonEncode(statusVideos),
-          //    trackerVideos: statusVideos,
-          //  );
-          //}
         }
       }
     }
     trackerVideos = statusVideos;
-
     state = state.copyWith(
       isLoading: false,
       images: statusImages,
@@ -264,7 +252,6 @@ class DataProvider extends StateNotifier<DataStatus> {
       if (fileName.contains('.jpg')) {
         //an image file add it to our list
         savedStatusImages.add(file.path);
-        //
         //
       } else if (fileName.contains('.mp4')) {
         //A video
@@ -314,9 +301,11 @@ class DataProvider extends StateNotifier<DataStatus> {
   ///////////////////////////////////////////////////////////////////////////////////////////////
   void _garbageCollector(List<FileSystemEntity> temporaryFiles) {
     //Go through each of our temporary files deleting trash
+   // developer.log("Garbage Collector Started");
+
     //Sort newest to old files.
-    List<VideoFile> statusThumbnails = state.trackerVideos;
-    List<VideoFile> savedThumbnails = state.trackerSavedVideos;
+    List<VideoFile> statusThumbnails = trackerVideos;
+    List<VideoFile> savedThumbnails = trackerSavedVideos;
     for (var file in temporaryFiles) {
       final String fileName = basename(file.path);
       //
@@ -352,12 +341,11 @@ class DataProvider extends StateNotifier<DataStatus> {
       }
 
       if (deleteFile) {
-        //       file.delete();
+        //developer.log('Deleted:: Filename $fileName deleted');
+        file.delete();
       }
     }
   }
-
-  //////////////////////////////////////////////////////////////////////////
 
   /////////////////////////////////////////////////////////////////////////
   //App mode toggle

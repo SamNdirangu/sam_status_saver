@@ -22,8 +22,7 @@ class StatusVideos extends HookConsumerWidget {
     final dataError = dataStatus.errorMsg;
     final permissionStatus = ref.watch(permissionProvider);
     //
-    Future<void> pullToRefresh() => ref.read(dataProvider.notifier).refreshData();
-    void pressToRefresh() => pullToRefresh();
+     final funcRefreshData = ref.read(dataProvider.notifier).refreshData;
 
     //
     if (!permissionStatus.isGranted || dataError != null) {
@@ -31,21 +30,29 @@ class StatusVideos extends HookConsumerWidget {
     }
     //////////////////////////////////////////////////////////////////////////////
     //Load our videos
-    final videoJson =
-        isSavedFiles ? jsonDecode(dataStatus.savedVideos!) as List : jsonDecode(dataStatus.videos!) as List;
+    final videoJson = isSavedFiles
+        ? jsonDecode(dataStatus.savedVideos!) as List
+        : jsonDecode(dataStatus.videos!) as List;
     final videos = videoJson.map((data) => VideoFile.fromJson(data)).toList();
 
     ///
     ///
     if (isLoading) {
-      return const Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-        CircularProgressIndicator(),
-        SizedBox(
-          height: 30,
-        ),
-        Text('Keep calm.\nGrabbing them Videos',
-            textAlign: TextAlign.center, textScaleFactor: 1.2, style: TextStyle(color: Colors.white)),
-      ]);
+      return const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          CircularProgressIndicator(),
+          SizedBox(
+            height: 30,
+          ),
+          Text(
+            'Keep calm.\nGrabbing them Videos',
+            textAlign: TextAlign.center,
+            textScaleFactor: 1.2,
+            style: TextStyle(color: Colors.white),
+          ),
+        ],
+      );
     }
 
     ///
@@ -54,44 +61,49 @@ class StatusVideos extends HookConsumerWidget {
       String infoString = ConstantAppStrings.noVideos;
       if (isSavedFiles) infoString = ConstantAppStrings.noSavedVideos;
       return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          const Icon(
-            Icons.sentiment_satisfied,
-            size: 56,
-            color: Colors.white,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            infoString,
-            style: const TextStyle(color: Colors.white),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: pressToRefresh,
-            icon: const Icon(Icons.refresh, color: Colors.black87),
-            label: const Text(
-              'Refresh',
-              style: TextStyle(color: Colors.black87),
-            ),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-          )
-        ]),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Icon(
+                Icons.sentiment_satisfied,
+                size: 56,
+                color: Colors.white,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                infoString,
+                style: const TextStyle(color: Colors.white),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: funcRefreshData,
+                icon: const Icon(Icons.refresh, color: Colors.black87),
+                label: const Text(
+                  'Refresh',
+                  style: TextStyle(color: Colors.black87),
+                ),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+              )
+            ]),
       );
     }
 
     return RefreshIndicator(
-        onRefresh: pullToRefresh,
+        onRefresh: funcRefreshData,
         child: GridView.builder(
           key: PageStorageKey(key),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 150),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 150),
           itemCount: videos.length,
           itemBuilder: (BuildContext context, int index) {
             return Padding(
               padding: const EdgeInsets.all(1.0),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(pageRouter(
-                      VideoContentView(videoFiles: videos, currentIndex: index, isSavedFiles: isSavedFiles)));
+                  Navigator.of(context).push(pageRouter(VideoContentView(
+                      videoFiles: videos,
+                      currentIndex: index,
+                      isSavedFiles: isSavedFiles)));
                 },
                 child: Image.file(
                   File(videos[index].thumbnailPath),

@@ -20,8 +20,8 @@ class StatusImages extends HookConsumerWidget {
     final dataError = dataStatus.errorMsg;
     final permissionStatus = ref.watch(permissionProvider);
     //
-    Future<void> pullToRefresh() => ref.read(dataProvider.notifier).refreshData();
-    void pressToRefresh() => ref.read(dataProvider.notifier).refreshData();
+    final funcRefreshData = ref.read(dataProvider.notifier).refreshData;
+
 
     //
     if (!permissionStatus.isGranted || dataError != null) {
@@ -62,7 +62,7 @@ class StatusImages extends HookConsumerWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
-            onPressed: pressToRefresh,
+            onPressed: funcRefreshData,
             icon: const Icon(Icons.refresh, color: Colors.black87),
             label: const Text(
               'Refresh',
@@ -74,7 +74,7 @@ class StatusImages extends HookConsumerWidget {
       );
     }
     return RefreshIndicator(
-        onRefresh: pullToRefresh,
+        onRefresh: funcRefreshData,
         child: GridView.builder(
           key: PageStorageKey(key),
           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 150),
