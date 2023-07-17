@@ -15,7 +15,8 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tabController = useTabController(initialLength: 3);
-    final animationController = useAnimationController(duration: const Duration(milliseconds: 300), initialValue: 1);
+    final animationController = useAnimationController(
+        duration: const Duration(milliseconds: 300), initialValue: 1);
 
     final funcRefreshData = ref.read(dataProvider.notifier).refreshData;
 
@@ -53,13 +54,16 @@ class HomeScreenContent extends StatefulWidget {
   final TabController tabController;
   final Function refreshData;
 
-  const HomeScreenContent({Key? key, required this.tabController, required this.refreshData}) : super(key: key);
+  const HomeScreenContent(
+      {Key? key, required this.tabController, required this.refreshData})
+      : super(key: key);
 
   @override
   HomeScreenContentState createState() => HomeScreenContentState();
 }
 
-class HomeScreenContentState extends State<HomeScreenContent> with WidgetsBindingObserver {
+class HomeScreenContentState extends State<HomeScreenContent>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();

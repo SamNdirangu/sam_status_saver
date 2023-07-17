@@ -102,6 +102,7 @@ class BackdropState extends State<Backdrop>
       return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
           elevation: _frontLayerVisible ? 0 : 2,
           titleSpacing: 0.0,
           title: BackdropTitle(
