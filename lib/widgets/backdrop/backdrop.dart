@@ -1,11 +1,12 @@
+import 'package:flutter/services.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sam_status_saver/constants/constant.strings.dart';
+import 'package:sam_status_saver/providers/all.providers.dart';
 import 'package:share/share.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:sam_status_saver/constants/appStrings.dart';
-import 'package:sam_status_saver/providers/appSettingsProvider.dart';
-import 'package:sam_status_saver/widgets/backdrop/FrontLayer.dart';
-import 'package:sam_status_saver/widgets/backdrop/animationLayer.dart';
-import 'package:sam_status_saver/widgets/backdrop/backDropTitle.dart';
+import 'package:sam_status_saver/widgets/backdrop/front_layer.dart';
+import 'package:sam_status_saver/widgets/backdrop/animation.layer.dart';
+import 'package:sam_status_saver/widgets/backdrop/backdrop.title.dart';
 
 /// Builds a Backdrop.
 ///
@@ -21,6 +22,7 @@ class Backdrop extends StatefulWidget {
   final AnimationController controller;
 
   const Backdrop({
+    super.key,
     required this.frontLayer,
     required this.backLayer,
     required this.frontTitle,
@@ -29,10 +31,11 @@ class Backdrop extends StatefulWidget {
   });
 
   @override
-  _BackdropState createState() => _BackdropState();
+  BackdropState createState() => BackdropState();
 }
 
-class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin {
+class BackdropState extends State<Backdrop>
+    with SingleTickerProviderStateMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey _backdropKey = GlobalKey(debugLabel: 'Backdrop');
   late AnimationController _controller;
@@ -54,7 +57,8 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
 
   bool get _frontLayerVisible {
     final AnimationStatus status = _controller.status;
-    return status == AnimationStatus.completed || status == AnimationStatus.forward;
+    return status == AnimationStatus.completed ||
+        status == AnimationStatus.forward;
   }
 
   void _toggleBackdropLayerVisibility() {
@@ -69,7 +73,8 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
     final Size layerSize = constraints.biggest;
     final double layerTop = layerSize.height - layerTitleHeight;
 
-    _layerAnimation = getLayerAnimation(layerSize, layerTop, _frontLayerVisible, _controller);
+    _layerAnimation =
+        getLayerAnimation(layerSize, layerTop, _frontLayerVisible, _controller);
 
     return Stack(
       key: _backdropKey,
@@ -89,43 +94,49 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final _isDarkTheme = context.watch<AppSettingsProvider>().appSettings.isDarkTheme;
-    final _isDarkThemeFunc = context.read<AppSettingsProvider>().toggleDarkTheme;
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        brightness: Brightness.dark,
-        elevation: _frontLayerVisible ? 0 : 2,
-        titleSpacing: 0.0,
-        title: BackdropTitle(
-          listenable: _controller.view,
-          onPress: _toggleBackdropLayerVisibility,
-          frontTitle: widget.frontTitle,
-          backTitle: widget.backTitle,
-        ),
-        actions: <Widget>[
-          IconButton(
-            tooltip: "Share App",
-            icon: const Icon(Icons.share),
-            onPressed: () {
-              Share.share(AppStrings.share);
-            },
+    return Consumer(builder: (context, ref, child) {
+      final isDarkTheme = ref.watch(appSettingsProvider).isDarkTheme;
+      final funcToggleDarkTheme =
+          ref.read(appSettingsProvider.notifier).toggleDarkTheme;
+
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          elevation: _frontLayerVisible ? 0 : 2,
+          titleSpacing: 0.0,
+          title: BackdropTitle(
+            listenable: _controller.view,
+            onPress: _toggleBackdropLayerVisibility,
+            frontTitle: widget.frontTitle,
+            backTitle: widget.backTitle,
           ),
-          IconButton(
-              tooltip: "Dark Theme",
-              icon: _isDarkTheme ? Icon(Icons.brightness_7) : Icon(Icons.brightness_3),
-              onPressed: () => _isDarkThemeFunc()),
-          IconButton(
-              icon: AnimatedIcon(
-                icon: AnimatedIcons.close_menu,
-                progress: _controller,
-              ),
-              onPressed: () => _toggleBackdropLayerVisibility()),
-        ],
-      ),
-      body: LayoutBuilder(
-        builder: _buildStack,
-      ),
-    );
+          actions: <Widget>[
+            IconButton(
+              tooltip: "Share App",
+              icon: const Icon(Icons.share),
+              onPressed: () {
+                Share.share(ConstantAppStrings.share);
+              },
+            ),
+            IconButton(
+                tooltip: "Dark Theme",
+                icon: isDarkTheme
+                    ? const Icon(Icons.brightness_7)
+                    : const Icon(Icons.brightness_3),
+                onPressed: () => funcToggleDarkTheme()),
+            IconButton(
+                icon: AnimatedIcon(
+                  icon: AnimatedIcons.close_menu,
+                  progress: _controller,
+                ),
+                onPressed: () => _toggleBackdropLayerVisibility()),
+          ],
+        ),
+        body: LayoutBuilder(
+          builder: _buildStack,
+        ),
+      );
+    });
   }
 }
