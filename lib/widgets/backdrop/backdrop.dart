@@ -1,9 +1,8 @@
-import 'package:flutter/services.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:sam_status_saver/constants/constant.strings.dart';
-import 'package:sam_status_saver/providers/all.providers.dart';
 import 'package:share/share.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sam_status_saver/providers/all.providers.dart';
+import 'package:sam_status_saver/constants/constant.strings.dart';
 import 'package:sam_status_saver/widgets/backdrop/front_layer.dart';
 import 'package:sam_status_saver/widgets/backdrop/animation.layer.dart';
 import 'package:sam_status_saver/widgets/backdrop/backdrop.title.dart';
